@@ -1,9 +1,8 @@
 node_modules/
-everything-claude-code-upstream/
 graphify-out/
 .graphify_analysis.json
 .graphify_root
-.opencode/
+.opencode/sessions/
 *.log
 *.tmp
 .DS_Store

@@ -9,7 +9,7 @@ export const SUPPORTED_MANAGERS = ['npm', 'pnpm', 'yarn', 'bun'];
  */
 export function detectPackageManager(cwd = process.cwd()) {
   // 1. Environment variable override
-  const envPm = process.env.OPENCODE_PACKAGE_MANAGER || process.env.CLAUDE_PACKAGE_MANAGER;
+  const envPm = process.env.OPENCODE_PACKAGE_MANAGER;
   if (envPm && SUPPORTED_MANAGERS.includes(envPm.toLowerCase()) && hasExecutable(envPm)) {
     return envPm.toLowerCase();
   }

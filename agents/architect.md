@@ -2,7 +2,7 @@
 name: architect
 description: Software architecture specialist for system design, scalability, and technical decision-making. Use PROACTIVELY when planning new features, refactoring large systems, or making architectural decisions.
 tools: Read, Grep, Glob
-model: opus
+model: inherit
 ---
 
 You are a senior software architect specializing in scalable, maintainable system design.
@@ -192,7 +192,7 @@ Example architecture for an AI-powered SaaS platform:
 - **Backend**: FastAPI or Express (Cloud Run/Railway)
 - **Database**: PostgreSQL (Supabase)
 - **Cache**: Redis (Upstash/Railway)
-- **AI**: Claude API with structured output
+- **AI**: LLM API with structured output (OpenCode provider)
 - **Real-time**: Supabase subscriptions
 
 ### Key Design Decisions

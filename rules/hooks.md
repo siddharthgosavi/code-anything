@@ -6,7 +6,7 @@
 - **PostToolUse**: After tool execution (auto-format, checks)
 - **Stop**: When session ends (final verification)
 
-## Current Hooks (in ~/.claude/settings.json)
+## Current Hooks (in OpenCode plugin / .opencode/opencode.json)
 
 ### PreToolUse
 - **tmux reminder**: Suggests tmux for long-running commands (npm, pnpm, yarn, cargo, etc.)
@@ -28,7 +28,7 @@ Use with caution:
 - Enable for trusted, well-defined plans
 - Disable for exploratory work
 - Never use dangerously-skip-permissions flag
-- Configure `allowedTools` in `~/.claude.json` instead
+- Configure permissions in `opencode.jsonc` instead
 
 ## TodoWrite Best Practices
 

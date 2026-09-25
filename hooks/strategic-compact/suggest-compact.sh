@@ -8,14 +8,14 @@
 # - Compact after exploration, before execution
 # - Compact after completing a milestone, before starting next
 #
-# Hook config (in ~/.claude/settings.json):
+# Hook config (in ~/.config/opencode/opencode.jsonc):
 # {
 #   "hooks": {
 #     "PreToolUse": [{
-#       "matcher": "Edit|Write",
+#       "matcher": "edit|write",
 #       "hooks": [{
 #         "type": "command",
-#         "command": "~/.claude/skills/strategic-compact/suggest-compact.sh"
+#         "command": "~/.config/opencode/skills/strategic-compact/suggest-compact.sh"
 #       }]
 #     }]
 #   }
@@ -28,7 +28,7 @@
 # - Plan has been finalized
 
 # Track tool call count (increment in a temp file)
-COUNTER_FILE="/tmp/claude-tool-count-$$"
+COUNTER_FILE="/tmp/opencode-tool-count-$$"
 THRESHOLD=${COMPACT_THRESHOLD:-50}
 
 # Initialize or increment counter
@@ -43,10 +43,10 @@ fi
 
 # Suggest compact after threshold tool calls
 if [ "$count" -eq "$THRESHOLD" ]; then
-  echo "[StrategicCompact] $THRESHOLD tool calls reached - consider /compact if transitioning phases" >&2
+  echo "[StrategicCompact] $THRESHOLD tool calls reached - consider /checkpoint or compacting if transitioning phases" >&2
 fi
 
 # Suggest at regular intervals after threshold
 if [ "$count" -gt "$THRESHOLD" ] && [ $((count % 25)) -eq 0 ]; then
-  echo "[StrategicCompact] $count tool calls - good checkpoint for /compact if context is stale" >&2
+  echo "[StrategicCompact] $count tool calls - good checkpoint for compacting if context is stale" >&2
 fi

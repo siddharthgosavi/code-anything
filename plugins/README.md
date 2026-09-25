@@ -1,85 +1,88 @@
-# Plugins and Marketplaces
+# OpenCode Plugins Guide
 
-Plugins extend Claude Code with new tools and capabilities. This guide covers installation only - see the [full article](https://x.com/affaanmustafa/status/2012378465664745795) for when and why to use them.
+Plugins extend OpenCode coding agent with new capabilities, lifecycle hooks, AST knowledge graph tools, and automated workflows.
 
 ---
 
-## Marketplaces
+## Installing OpenCode Plugins
 
-Marketplaces are repositories of installable plugins.
+OpenCode supports plugins via npm packages registered in your global (`~/.config/opencode/opencode.json`) or project-level (`./opencode.json`) configuration.
 
-### Adding a Marketplace
+### 1. Automatic Setup with `everything-opencode`
+
+The quickest way to install and configure this plugin toolkit for your OpenCode environment:
 
 ```bash
-# Add official Anthropic marketplace
-claude plugin marketplace add https://github.com/anthropics/claude-plugins-official
+# Run one-shot interactive setup and installer
+npx everything-opencode
 
-# Add community marketplaces
-claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
+# Or install globally
+npm install -g everything-opencode
 ```
 
-### Recommended Marketplaces
+### 2. Manual Configuration
 
-| Marketplace | Source |
-|-------------|--------|
-| claude-plugins-official | `anthropics/claude-plugins-official` |
-| claude-code-plugins | `anthropics/claude-code` |
-| Mixedbread-Grep | `mixedbread-ai/mgrep` |
+Add `everything-opencode` to the `"plugin"` array in `opencode.json`:
 
----
-
-## Installing Plugins
-
-```bash
-# Open plugins browser
-/plugins
-
-# Or install directly
-claude plugin install typescript-lsp@claude-plugins-official
-```
-
-### Recommended Plugins
-
-**Development:**
-- `typescript-lsp` - TypeScript intelligence
-- `pyright-lsp` - Python type checking
-- `hookify` - Create hooks conversationally
-- `code-simplifier` - Refactor code
-
-**Code Quality:**
-- `code-review` - Code review
-- `pr-review-toolkit` - PR automation
-- `security-guidance` - Security checks
-
-**Search:**
-- `mgrep` - Enhanced search (better than ripgrep)
-- `context7` - Live documentation lookup
-
-**Workflow:**
-- `commit-commands` - Git workflow
-- `frontend-design` - UI patterns
-- `feature-dev` - Feature development
-
----
-
-## Quick Setup
-
-```bash
-# Add marketplaces
-claude plugin marketplace add https://github.com/anthropics/claude-plugins-official
-claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
-
-# Open /plugins and install what you need
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    "everything-opencode"
+  ]
+}
 ```
 
 ---
 
-## Plugin Files Location
+## Plugin Architecture & Capabilities
+
+`everything-opencode` delivers full-lifecycle capabilities across your OpenCode sessions:
+
+### 1. Lifecycle Hooks
+- **`tool.execute.before`**:
+  - Automatically checks for AST knowledge graphs generated with `graphify`.
+  - Prompts and injects graph navigation when performing codebase searches.
+  - Warns on extended sessions to run `/checkpoint` or `/compact`.
+  - Blocks dangerous destructive operations (e.g., unintended root deletions).
+- **`tool.execute.after`**:
+  - Captures PR creation outputs from GitHub CLI (`gh pr create`) and formats PR URLs.
+  - Formats edited JavaScript/TypeScript/JSON files automatically when Prettier is available.
+- **`experimental.session.compacting`**:
+  - Automatically captures and serializes session snapshots into `.opencode/sessions/` before context summarization.
+
+### 2. Built-in Graphify Code Intelligence
+- Deep symbol navigation using AST graphs:
+  - Run `/graph-build` to index code without external API token costs.
+  - Run `/graph-query <symbol>` to inspect caller/callee trees and import relationships.
+  - Delegate deep architecture analysis to `@graph-analyst`.
+
+### 3. Integrated Agents & Slash Commands
+- Specialized subagents configured for OpenCode:
+  - `@planner`, `@architect`, `@code-reviewer`, `@security-reviewer`, `@tdd-guide`, `@build-error-resolver`, `@doc-updater`, `@refactor-cleaner`, `@e2e-runner`, `@graph-analyst`.
+- Custom commands:
+  - `/plan`, `/tdd`, `/eval`, `/checkpoint`, `/learn`, `/setup-pm`, `/e2e`, `/graph-build`, `/graph-query`.
+
+---
+
+## Configuration Files Location
 
 ```
-~/.claude/plugins/
-|-- cache/                    # Downloaded plugins
-|-- installed_plugins.json    # Installed list
-|-- known_marketplaces.json   # Added marketplaces
-|-- marketplaces/             # Marketplace data
+~/.config/opencode/
+|-- opencode.json             # Global configuration (plugins, providers, agents)
+|-- package-manager.json      # Package manager preference (npm, pnpm, yarn, bun)
+|-- sessions/                 # Persisted session checkpoints and snapshots
+|-- skills/learned/           # Continuous learning extracted skills
+```
+
+And in your workspace project:
+
+```
+./
+|-- opencode.json             # Project OpenCode configuration
+|-- .opencode/
+|   |-- package-manager.json  # Project-specific package manager preference
+|   `-- sessions/             # Project session snapshots
+|-- graphify-out/             # AST knowledge graph generated by graphify
+`-- AGENTS.md                 # Project agent guidelines and instructions
 ```

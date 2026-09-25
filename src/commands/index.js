@@ -1,6 +1,5 @@
 /**
- * OpenCode slash commands adapted from everything-claude-code,
- * converted into OpenCode native command schemas with parameter support.
+ * OpenCode slash commands with parameter support and Graphify awareness.
  */
 
 export const COMMANDS = {

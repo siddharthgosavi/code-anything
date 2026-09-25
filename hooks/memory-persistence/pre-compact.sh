@@ -1,23 +1,23 @@
 #!/bin/bash
 # PreCompact Hook - Save state before context compaction
 #
-# Runs before Claude compacts context, giving you a chance to
+# Runs before OpenCode compacts context, giving you a chance to
 # preserve important state that might get lost in summarization.
 #
-# Hook config (in ~/.claude/settings.json):
+# Hook config (in ~/.config/opencode/opencode.jsonc):
 # {
 #   "hooks": {
 #     "PreCompact": [{
 #       "matcher": "*",
 #       "hooks": [{
 #         "type": "command",
-#         "command": "~/.claude/hooks/memory-persistence/pre-compact.sh"
+#         "command": "~/.config/opencode/hooks/memory-persistence/pre-compact.sh"
 #       }]
 #     }]
 #   }
 # }
 
-SESSIONS_DIR="${HOME}/.claude/sessions"
+SESSIONS_DIR="${OPENCODE_DIR:-${HOME}/.config/opencode}/sessions"
 COMPACTION_LOG="${SESSIONS_DIR}/compaction-log.txt"
 
 mkdir -p "$SESSIONS_DIR"

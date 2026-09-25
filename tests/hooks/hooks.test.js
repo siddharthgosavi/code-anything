@@ -114,7 +114,8 @@ async function runTests() {
     await runScript(path.join(scriptsDir, 'session-end.js'));
 
     // Check if session file was created
-    const sessionsDir = path.join(os.homedir(), '.claude', 'sessions');
+    const utils = require('../../scripts/lib/utils');
+    const sessionsDir = utils.getSessionsDir();
     const today = new Date().toISOString().split('T')[0];
     const sessionFile = path.join(sessionsDir, `${today}-session.tmp`);
 
@@ -136,7 +137,8 @@ async function runTests() {
 
   if (await asyncTest('creates compaction log', async () => {
     await runScript(path.join(scriptsDir, 'pre-compact.js'));
-    const logFile = path.join(os.homedir(), '.claude', 'sessions', 'compaction-log.txt');
+    const utils = require('../../scripts/lib/utils');
+    const logFile = path.join(utils.getSessionsDir(), 'compaction-log.txt');
     assert.ok(fs.existsSync(logFile), 'Compaction log should exist');
   })) passed++; else failed++;
 
@@ -145,7 +147,7 @@ async function runTests() {
 
   if (await asyncTest('runs without error', async () => {
     const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-      CLAUDE_SESSION_ID: 'test-session-' + Date.now()
+      OPENCODE_SESSION_ID: 'test-session-' + Date.now()
     });
     assert.strictEqual(result.code, 0, `Exit code should be 0, got ${result.code}`);
   })) passed++; else failed++;
@@ -156,12 +158,12 @@ async function runTests() {
     // Run multiple times
     for (let i = 0; i < 3; i++) {
       await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId
+        OPENCODE_SESSION_ID: sessionId
       });
     }
 
     // Check counter file
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `opencode-tool-count-${sessionId}`);
     const count = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
     assert.strictEqual(count, 3, `Counter should be 3, got ${count}`);
 
@@ -171,13 +173,13 @@ async function runTests() {
 
   if (await asyncTest('suggests compact at threshold', async () => {
     const sessionId = 'test-threshold-' + Date.now();
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `opencode-tool-count-${sessionId}`);
 
     // Set counter to threshold - 1
     fs.writeFileSync(counterFile, '49');
 
     const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-      CLAUDE_SESSION_ID: sessionId,
+      OPENCODE_SESSION_ID: sessionId,
       COMPACT_THRESHOLD: '50'
     });
 
@@ -207,7 +209,7 @@ async function runTests() {
     fs.writeFileSync(transcriptPath, transcript);
 
     const result = await runScript(path.join(scriptsDir, 'evaluate-session.js'), '', {
-      CLAUDE_TRANSCRIPT_PATH: transcriptPath
+      OPENCODE_TRANSCRIPT_PATH: transcriptPath
     });
 
     assert.ok(
@@ -227,7 +229,7 @@ async function runTests() {
     fs.writeFileSync(transcriptPath, transcript);
 
     const result = await runScript(path.join(scriptsDir, 'evaluate-session.js'), '', {
-      CLAUDE_TRANSCRIPT_PATH: transcriptPath
+      OPENCODE_TRANSCRIPT_PATH: transcriptPath
     });
 
     assert.ok(
@@ -280,7 +282,7 @@ async function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('script references use CLAUDE_PLUGIN_ROOT variable', () => {
+  if (test('script references use OPENCODE_PLUGIN_ROOT variable', () => {
     const hooksPath = path.join(__dirname, '..', '..', 'hooks', 'hooks.json');
     const hooks = JSON.parse(fs.readFileSync(hooksPath, 'utf8'));
 
@@ -288,11 +290,11 @@ async function runTests() {
       for (const entry of hookArray) {
         for (const hook of entry.hooks) {
           if (hook.type === 'command' && hook.command.includes('scripts/hooks/')) {
-            // Check for the literal string "${CLAUDE_PLUGIN_ROOT}" in the command
-            const hasPluginRoot = hook.command.includes('${CLAUDE_PLUGIN_ROOT}');
+            // Check for the literal string "${OPENCODE_PLUGIN_ROOT}" in the command
+            const hasPluginRoot = hook.command.includes('${OPENCODE_PLUGIN_ROOT}');
             assert.ok(
               hasPluginRoot,
-              `Script paths should use CLAUDE_PLUGIN_ROOT: ${hook.command.substring(0, 80)}...`
+              `Script paths should use OPENCODE_PLUGIN_ROOT: ${hook.command.substring(0, 80)}...`
             );
           }
         }

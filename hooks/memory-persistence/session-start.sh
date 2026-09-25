@@ -1,24 +1,24 @@
 #!/bin/bash
 # SessionStart Hook - Load previous context on new session
 #
-# Runs when a new Claude session starts. Checks for recent session
-# files and notifies Claude of available context to load.
+# Runs when a new OpenCode session starts. Checks for recent session
+# files and notifies OpenCode of available context to load.
 #
-# Hook config (in ~/.claude/settings.json):
+# Hook config (in ~/.config/opencode/opencode.jsonc):
 # {
 #   "hooks": {
 #     "SessionStart": [{
 #       "matcher": "*",
 #       "hooks": [{
 #         "type": "command",
-#         "command": "~/.claude/hooks/memory-persistence/session-start.sh"
+#         "command": "~/.config/opencode/hooks/memory-persistence/session-start.sh"
 #       }]
 #     }]
 #   }
 # }
 
-SESSIONS_DIR="${HOME}/.claude/sessions"
-LEARNED_DIR="${HOME}/.claude/skills/learned"
+SESSIONS_DIR="${OPENCODE_DIR:-${HOME}/.config/opencode}/sessions"
+LEARNED_DIR="${OPENCODE_DIR:-${HOME}/.config/opencode}/skills/learned"
 
 # Check for recent session files (last 7 days)
 recent_sessions=$(find "$SESSIONS_DIR" -name "*.tmp" -mtime -7 2>/dev/null | wc -l | tr -d ' ')

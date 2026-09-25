@@ -1,6 +1,6 @@
-# Example Project CLAUDE.md
+# Example Project AGENTS.md
 
-This is an example project-level CLAUDE.md file. Place this in your project root.
+This is an example project-level AGENTS.md file. Place this in your project root.
 
 ## Project Overview
 
@@ -85,12 +85,15 @@ API_KEY=
 DEBUG=false
 ```
 
-## Available Commands
+## Available OpenCode Commands
 
-- `/tdd` - Test-driven development workflow
 - `/plan` - Create implementation plan
+- `/tdd` - Test-driven development workflow
+- `/verify` - Run verification loop
 - `/code-review` - Review code quality
 - `/build-fix` - Fix build errors
+- `/graph-query` - Query AST knowledge graph via Graphify
+- `/graph-build` - Build knowledge graph via Graphify
 
 ## Git Workflow
 

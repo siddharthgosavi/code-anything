@@ -4,8 +4,8 @@
  *
  * Cross-platform (Windows, macOS, Linux)
  *
- * Runs when a new Claude session starts. Checks for recent session
- * files and notifies Claude of available context to load.
+ * Runs when a new OpenCode session starts. Checks for recent session
+ * files and notifies OpenCode of available context to load.
  */
 
 const path = require('path');

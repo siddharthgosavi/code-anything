@@ -83,9 +83,9 @@
     }
   },
   "_comments": {
-    "usage": "Copy the servers you need to your ~/.claude.json mcpServers section",
+    "usage": "Copy the servers you need to your ~/.config/opencode/opencode.json or project opencode.json mcp section",
     "env_vars": "Replace YOUR_*_HERE placeholders with actual values",
-    "disabling": "Use disabledMcpServers array in project config to disable per-project",
+    "disabling": "Disable per-project or use enabled flag in opencode.json",
     "context_warning": "Keep under 10 MCPs enabled to preserve context window"
   }
 }

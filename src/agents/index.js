@@ -1,6 +1,6 @@
 /**
- * Production-ready OpenCode agents adapted from everything-claude-code,
- * with model flexibility, permission isolation, and Graphify awareness.
+ * Production-ready OpenCode agents with model flexibility,
+ * permission isolation, and Graphify code intelligence.
  */
 
 export const AGENTS = {

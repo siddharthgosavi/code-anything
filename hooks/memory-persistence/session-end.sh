@@ -1,23 +1,23 @@
 #!/bin/bash
 # Stop Hook (Session End) - Persist learnings when session ends
 #
-# Runs when Claude session ends. Creates/updates session log file
+# Runs when OpenCode session ends. Creates/updates session log file
 # with timestamp for continuity tracking.
 #
-# Hook config (in ~/.claude/settings.json):
+# Hook config (in ~/.config/opencode/opencode.jsonc):
 # {
 #   "hooks": {
 #     "Stop": [{
 #       "matcher": "*",
 #       "hooks": [{
 #         "type": "command",
-#         "command": "~/.claude/hooks/memory-persistence/session-end.sh"
+#         "command": "~/.config/opencode/hooks/memory-persistence/session-end.sh"
 #       }]
 #     }]
 #   }
 # }
 
-SESSIONS_DIR="${HOME}/.claude/sessions"
+SESSIONS_DIR="${OPENCODE_DIR:-${HOME}/.config/opencode}/sessions"
 TODAY=$(date '+%Y-%m-%d')
 SESSION_FILE="${SESSIONS_DIR}/${TODAY}-session.tmp"
 

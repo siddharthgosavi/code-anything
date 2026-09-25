@@ -4,7 +4,7 @@
  *
  * Cross-platform (Windows, macOS, Linux)
  *
- * Runs on Stop hook to extract reusable patterns from Claude Code sessions
+ * Runs on Stop hook to extract reusable patterns from OpenCode sessions
  *
  * Why Stop hook instead of UserPromptSubmit:
  * - Stop runs once at session end (lightweight)
@@ -49,8 +49,8 @@ async function main() {
   // Ensure learned skills directory exists
   ensureDir(learnedSkillsPath);
 
-  // Get transcript path from environment (set by Claude Code)
-  const transcriptPath = process.env.CLAUDE_TRANSCRIPT_PATH;
+  // Get transcript path from environment (set by OpenCode)
+  const transcriptPath = process.env.OPENCODE_TRANSCRIPT_PATH;
 
   if (!transcriptPath || !fs.existsSync(transcriptPath)) {
     process.exit(0);
@@ -65,7 +65,7 @@ async function main() {
     process.exit(0);
   }
 
-  // Signal to Claude that session should be evaluated for extractable patterns
+  // Signal to OpenCode that session should be evaluated for extractable patterns
   log(`[ContinuousLearning] Session has ${messageCount} messages - evaluate for extractable patterns`);
   log(`[ContinuousLearning] Save learned skills to: ${learnedSkillsPath}`);
 

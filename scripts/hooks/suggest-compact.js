@@ -26,8 +26,8 @@ async function main() {
   // Track tool call count (increment in a temp file)
   // Use a session-specific counter file based on PID from parent process
   // or session ID from environment
-  const sessionId = process.env.CLAUDE_SESSION_ID || process.ppid || 'default';
-  const counterFile = path.join(getTempDir(), `claude-tool-count-${sessionId}`);
+  const sessionId = process.env.OPENCODE_SESSION_ID || process.ppid || 'default';
+  const counterFile = path.join(getTempDir(), `opencode-tool-count-${sessionId}`);
   const threshold = parseInt(process.env.COMPACT_THRESHOLD || '50', 10);
 
   let count = 1;

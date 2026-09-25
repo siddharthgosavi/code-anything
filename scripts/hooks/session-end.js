@@ -4,7 +4,7 @@
  *
  * Cross-platform (Windows, macOS, Linux)
  *
- * Runs when Claude session ends. Creates/updates session log file
+ * Runs when OpenCode session ends. Creates/updates session log file
  * with timestamp for continuity tracking.
  */
 

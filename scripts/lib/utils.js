@@ -1,5 +1,5 @@
 /**
- * Cross-platform utility functions for Claude Code hooks and scripts
+ * Cross-platform utility functions for OpenCode hooks and scripts
  * Works on Windows, macOS, and Linux
  */
 
@@ -21,24 +21,25 @@ function getHomeDir() {
 }
 
 /**
- * Get the Claude config directory
+ * Get the OpenCode config directory
  */
-function getClaudeDir() {
-  return path.join(getHomeDir(), '.claude');
+function getOpenCodeDir() {
+  const xdg = process.env.XDG_CONFIG_HOME || path.join(getHomeDir(), '.config');
+  return path.join(xdg, 'opencode');
 }
 
 /**
  * Get the sessions directory
  */
 function getSessionsDir() {
-  return path.join(getClaudeDir(), 'sessions');
+  return path.join(getOpenCodeDir(), 'sessions');
 }
 
 /**
  * Get the learned skills directory
  */
 function getLearnedSkillsDir() {
-  return path.join(getClaudeDir(), 'skills', 'learned');
+  return path.join(getOpenCodeDir(), 'skills', 'learned');
 }
 
 /**
@@ -177,14 +178,14 @@ async function readStdinJson() {
 }
 
 /**
- * Log to stderr (visible to user in Claude Code)
+ * Log to stderr (visible to user in OpenCode)
  */
 function log(message) {
   console.error(message);
 }
 
 /**
- * Output to stdout (returned to Claude)
+ * Output to stdout (returned to OpenCode)
  */
 function output(data) {
   if (typeof data === 'object') {
@@ -335,7 +336,7 @@ module.exports = {
 
   // Directories
   getHomeDir,
-  getClaudeDir,
+  getOpenCodeDir,
   getSessionsDir,
   getLearnedSkillsDir,
   getTempDir,
