@@ -6,6 +6,7 @@ import { runDoctor } from './doctor.js';
 import { GraphifyRunner } from './graphify-runner.js';
 import { MODEL_PRESETS } from './presets.js';
 import { listDivisions, listDivisionAgents, searchAgents, installAgencyAgents } from './agency.js';
+import { routePrompt } from '../lib/router.js';
 import { colors, log } from '../lib/utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -32,6 +33,7 @@ ${colors.bold}Usage:${colors.reset}
 ${colors.bold}Commands:${colors.reset}
   ${colors.cyan}install${colors.reset} (default)    Configure OpenCode (agents, skills, commands, rules, hooks)
   ${colors.cyan}doctor${colors.reset}               Check OpenCode, active sessions, and Graphify health
+  ${colors.cyan}route <prompt>${colors.reset}       Intelligently choose relevant agents for a prompt/task
   ${colors.cyan}graphify [action]${colors.reset}    Manage Graphify AST knowledge graph
       ${colors.gray}init${colors.reset}             Build AST knowledge graph (--code-only)
       ${colors.gray}query <text>${colors.reset}      Query the codebase knowledge graph
@@ -39,6 +41,7 @@ ${colors.bold}Commands:${colors.reset}
   ${colors.cyan}agency [action]${colors.reset}      Manage 279 Agency Agents across 18 divisions
       ${colors.gray}list [--division <name>]${colors.reset} List divisions or agents in a division
       ${colors.gray}search <query>${colors.reset}          Search agency agents by topic/role
+      ${colors.gray}route <prompt>${colors.reset}          Find matching agents and workflows for a prompt
       ${colors.gray}install [agents...]${colors.reset}      Install selected agents, --division <name>, or --all
   ${colors.cyan}preset list${colors.reset}          List available model presets
   ${colors.cyan}help${colors.reset}                 Show this help message
@@ -145,6 +148,17 @@ export async function runCli(argv = process.argv.slice(2)) {
         return 0;
       }
 
+      case 'route': {
+        const promptText = args.filter(a => !a.startsWith('-')).join(' ');
+        if (!promptText) {
+          log.error('Please specify a prompt: npx everything-opencode route "<task description>"');
+          return 1;
+        }
+        const result = routePrompt(promptText);
+        displayRouteResult(result);
+        return 0;
+      }
+
       case 'agency':
       case 'agents': {
         const subAction = args[0] && !args[0].startsWith('-') ? args.shift() : 'list';
@@ -165,6 +179,14 @@ export async function runCli(argv = process.argv.slice(2)) {
             return 1;
           }
           searchAgents(query);
+        } else if (subAction === 'route') {
+          const promptText = args.filter(a => !a.startsWith('-')).join(' ');
+          if (!promptText) {
+            log.error('Please specify a prompt: npx everything-opencode agency route "<task description>"');
+            return 1;
+          }
+          const result = routePrompt(promptText);
+          displayRouteResult(result);
         } else if (subAction === 'install' || subAction === 'add') {
           const positionalAgents = args.filter((a, idx) => {
             if (a.startsWith('-')) return false;
@@ -181,7 +203,7 @@ export async function runCli(argv = process.argv.slice(2)) {
             cwd: process.cwd()
           });
         } else {
-          log.error(`Unknown agency action: ${subAction}. Use 'list', 'search', or 'install'.`);
+          log.error(`Unknown agency action: ${subAction}. Use 'list', 'search', 'route', or 'install'.`);
           return 1;
         }
         return 0;
@@ -215,3 +237,37 @@ export async function runCli(argv = process.argv.slice(2)) {
     return 1;
   }
 }
+
+export function displayRouteResult(result) {
+  log.header(`Agent Selection for: "${result.prompt}"`);
+
+  const p = result.primaryAgent;
+  console.log(`${colors.bold}Primary Recommendation:${colors.reset}`);
+  console.log(`  ${colors.green}${colors.bold}@${p.slug}${colors.reset} (${p.name}) [Tier ${p.tier} - ${p.division}]`);
+  console.log(`  ${colors.gray}${p.description}${colors.reset}`);
+  if (p.slashCommand) {
+    console.log(`  Slash Command: ${colors.cyan}${p.slashCommand}${colors.reset}`);
+  }
+  console.log();
+
+  if (result.workflow && result.workflow.length > 0) {
+    console.log(`${colors.bold}Recommended Multi-Agent Workflow:${colors.reset}`);
+    const chainStr = result.workflow.map((w, idx) => `${idx + 1}. ${colors.cyan}@${w.slug}${colors.reset} (${w.role})`).join('\n  ');
+    console.log(`  ${chainStr}\n`);
+  }
+
+  if (result.candidates && result.candidates.length > 1) {
+    console.log(`${colors.bold}Alternative Candidates:${colors.reset}`);
+    for (const c of result.candidates.slice(1, 4)) {
+      console.log(`  • ${colors.cyan}@${c.slug}${colors.reset} [score: ${c.score}] - ${c.name} (${c.division})`);
+    }
+    console.log();
+  }
+
+  console.log(`${colors.bold}Reasoning:${colors.reset}`);
+  console.log(`  ${colors.gray}${result.reason}${colors.reset}\n`);
+
+  console.log(`${colors.bold}How to invoke in OpenCode:${colors.reset}`);
+  console.log(`  Type ${colors.cyan}@${p.slug}${colors.reset} in your prompt or run ${colors.cyan}${result.recommendedCommand}${colors.reset}\n`);
+}
+
