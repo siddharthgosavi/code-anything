@@ -17,15 +17,24 @@
   "files": [
     "bin",
     "src",
-    "skills",
+    "agents",
+    "commands",
+    "contexts",
+    "examples",
+    "hooks",
+    "mcp-configs",
+    "plugins",
     "rules",
+    "scripts",
+    "skills",
     "templates",
     "LICENSE",
     "README.md",
-    "FLAWS_FIXED.md"
+    "FLAWS_FIXED.md",
+    "WORLDFLOWAI.md"
   ],
   "scripts": {
-    "test": "node tests/run-all.js",
+    "test": "node tests/run-all.js && node tests/lib/utils.test.js && node tests/lib/package-manager.test.js && node tests/hooks/hooks.test.js",
     "start": "node bin/cli.js",
     "doctor": "node bin/cli.js doctor",
     "graphify": "node bin/cli.js graphify"
