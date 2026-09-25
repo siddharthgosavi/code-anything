@@ -5,6 +5,7 @@ import { OpenCodeInstaller } from './installer.js';
 import { runDoctor } from './doctor.js';
 import { GraphifyRunner } from './graphify-runner.js';
 import { MODEL_PRESETS } from './presets.js';
+import { listDivisions, listDivisionAgents, searchAgents, installAgencyAgents } from './agency.js';
 import { colors, log } from '../lib/utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -35,6 +36,10 @@ ${colors.bold}Commands:${colors.reset}
       ${colors.gray}init${colors.reset}             Build AST knowledge graph (--code-only)
       ${colors.gray}query <text>${colors.reset}      Query the codebase knowledge graph
       ${colors.gray}status${colors.reset}           Show graph node/edge statistics
+  ${colors.cyan}agency [action]${colors.reset}      Manage 279 Agency Agents across 18 divisions
+      ${colors.gray}list [--division <name>]${colors.reset} List divisions or agents in a division
+      ${colors.gray}search <query>${colors.reset}          Search agency agents by topic/role
+      ${colors.gray}install [agents...]${colors.reset}      Install selected agents, --division <name>, or --all
   ${colors.cyan}preset list${colors.reset}          List available model presets
   ${colors.cyan}help${colors.reset}                 Show this help message
   ${colors.cyan}version${colors.reset}              Show version number
@@ -43,6 +48,8 @@ ${colors.bold}Options:${colors.reset}
   -p, --project            Install for current project (.opencode/) [default]
   -g, --global             Install globally (~/.config/opencode/)
   --preset <name>          Model preset (inherit | anthropic | openai | google | explabs | github)
+  --division <name>        Target agency agents division (e.g. engineering, security, design)
+  --all                    Select all agents
   --dry-run                Simulate installation without writing changes
   -h, --help               Display help
   -v, --version            Display version
@@ -50,7 +57,10 @@ ${colors.bold}Options:${colors.reset}
 ${colors.bold}Examples:${colors.reset}
   npx everything-opencode
   npx everything-opencode install --global
-  npx everything-opencode install --preset google
+  npx everything-opencode agency list
+  npx everything-opencode agency search "database"
+  npx everything-opencode agency install --division engineering
+  npx everything-opencode agency install database-optimizer rag-pipeline-engineer
   npx everything-opencode doctor
   npx everything-opencode graphify init
   npx everything-opencode graphify query "authMiddleware"
@@ -130,6 +140,48 @@ export async function runCli(argv = process.argv.slice(2)) {
           }
         } else {
           log.error(`Unknown graphify action: ${subAction}. Use 'init', 'query', or 'status'.`);
+          return 1;
+        }
+        return 0;
+      }
+
+      case 'agency':
+      case 'agents': {
+        const subAction = args[0] && !args[0].startsWith('-') ? args.shift() : 'list';
+        const divIndex = args.indexOf('--division');
+        const division = divIndex !== -1 && args[divIndex + 1] ? args[divIndex + 1] : null;
+        const all = args.includes('--all');
+
+        if (subAction === 'list') {
+          if (division) {
+            listDivisionAgents(division);
+          } else {
+            listDivisions();
+          }
+        } else if (subAction === 'search' || subAction === 'find') {
+          const query = args.filter(a => !a.startsWith('-')).join(' ');
+          if (!query) {
+            log.error('Please specify a search query: npx everything-opencode agency search "<term>"');
+            return 1;
+          }
+          searchAgents(query);
+        } else if (subAction === 'install' || subAction === 'add') {
+          const positionalAgents = args.filter((a, idx) => {
+            if (a.startsWith('-')) return false;
+            if (idx > 0 && args[idx - 1] === '--division') return false;
+            return true;
+          });
+
+          await installAgencyAgents({
+            division,
+            all,
+            agents: positionalAgents,
+            global: isGlobal,
+            dryRun,
+            cwd: process.cwd()
+          });
+        } else {
+          log.error(`Unknown agency action: ${subAction}. Use 'list', 'search', or 'install'.`);
           return 1;
         }
         return 0;

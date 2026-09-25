@@ -88,7 +88,15 @@ If you have existing, long-running OpenCode sessions:
 
 ---
 
-## Available Agents
+## Two-Tier Agent Architecture
+
+`everything-opencode` features a unique two-tier agent architecture:
+1. **Tier 1: 10 Core Orchestrator Agents** (pre-configured with slash commands & AST knowledge graphs).
+2. **Tier 2: 279 Agency Specialist Agents** across 18 specialized divisions (curated from [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents)), installable on-demand or callable as `@<slug>` subagents.
+
+---
+
+## Core Meta-Agents (Tier 1)
 
 | Agent | Scope & Role | Tools Permitted |
 | :--- | :--- | :--- |
@@ -102,6 +110,49 @@ If you have existing, long-running OpenCode sessions:
 | `refactor-cleaner` | Eliminates dead code, reduces cognitive complexity, modernizes syntax. | `bash, read, glob, grep, edit, write, task, skill` |
 | `doc-updater` | Keeps README.md, AGENTS.md, and API references synchronized with code. | `bash, read, glob, grep, edit, write, task, skill` |
 | `graph-analyst` | Explores Graphify knowledge graph, blast radius, callers/callees, and dead code. | `bash, read, glob, grep, task, skill` |
+
+---
+
+## Agency Specialist Roster (Tier 2 - 279 Agents)
+
+Equip OpenCode with 279 specialized agent personas spanning 18 distinct divisions. All technical division agents come with native **Graphify Code Intelligence** instructions pre-injected.
+
+### Agency Divisions
+- **Engineering (21 agents)**: `database-optimizer`, `graphql-architect`, `api-designer`, `devops-specialist`, `backend-architect`, etc.
+- **Architecture (11 agents)**: `cloud-architect`, `microservices-specialist`, `data-architect`, `system-integrator`, etc.
+- **Testing & QA (9 agents)**: `test-automation-engineer`, `accessibility-auditor`, `api-tester`, `performance-benchmarker`, etc.
+- **Security & Compliance (14 agents)**: `security-auditor`, `threat-modeler`, `compliance-officer`, `pentest-analyst`, etc.
+- **Design & UI/UX (27 agents)**: `design-system-architect`, `interaction-designer`, `mobile-ui-designer`, etc.
+- **Data & AI (18 agents)**: `ml-engineer`, `data-engineer`, `prompt-engineer`, `analytics-architect`, etc.
+- **DevOps & Cloud (16 agents)**: `k8s-operator`, `terraform-expert`, `ci-cd-pipeline-engineer`, etc.
+- **Product & Project (24 agents)**: `scrum-master`, `technical-product-manager`, `release-manager`, etc.
+- **Marketing, Sales, Support, Operations, Finance, Legal, HR, Executive & Spatial (139 agents)**
+
+### Agency CLI Management
+```bash
+# List all 18 divisions and counts
+npx everything-opencode agency list
+
+# List agents in a specific division
+npx everything-opencode agency list --division engineering
+
+# Search agents across all 279 personas by role or keyword
+npx everything-opencode agency search "postgres"
+npx everything-opencode agency search "kubernetes"
+npx everything-opencode agency search "accessibility"
+
+# Install specific agents into current project (.opencode/agents/)
+npx everything-opencode agency install database-optimizer graphql-architect
+
+# Install an entire division pack
+npx everything-opencode agency install --division engineering
+
+# Install all 279 agents globally (~/.config/opencode/agents/)
+npx everything-opencode agency install --all --global
+```
+
+In OpenCode, you can call any installed agency agent directly using `@<slug>`, for example:
+> *"@database-optimizer please analyze our PostgreSQL indexing strategy in `src/db/schema.ts`"*
 
 ---
 

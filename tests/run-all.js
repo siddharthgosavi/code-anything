@@ -3,6 +3,7 @@ import { testPluginHooks } from './plugin-hooks.test.js';
 import { testGraphifyIntegration } from './graphify-integration.test.js';
 import { testPackageManager } from './package-manager.test.js';
 import { testSessionSafety } from './safety-session.test.js';
+import { testAgency } from './agency.test.js';
 import { testCli } from './cli.test.js';
 import { colors, log } from '../src/lib/utils.js';
 
@@ -15,6 +16,7 @@ async function runAllTests() {
     { name: 'Plugin Lifecycle Hooks & Guards', fn: testPluginHooks },
     { name: 'Graphify Code Intelligence Integration', fn: testGraphifyIntegration },
     { name: 'Package Manager Detection', fn: testPackageManager },
+    { name: 'Agency Agents Catalog & Installation', fn: testAgency },
     { name: 'CLI Routing & Commands', fn: testCli }
   ];
 
