@@ -1,0 +1,165 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { OpenCodeInstaller } from './installer.js';
+import { runDoctor } from './doctor.js';
+import { GraphifyRunner } from './graphify-runner.js';
+import { MODEL_PRESETS } from './presets.js';
+import { colors, log } from '../lib/utils.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PKG_PATH = path.resolve(__dirname, '../../package.json');
+
+function getVersion() {
+  try {
+    const pkg = JSON.parse(fs.readFileSync(PKG_PATH, 'utf8'));
+    return pkg.version;
+  } catch {
+    return '1.0.0';
+  }
+}
+
+function showHelp() {
+  console.log(`
+${colors.bold}everything-opencode${colors.reset} v${getVersion()}
+Complete OpenCode coding agent configuration with Graphify code intelligence.
+
+${colors.bold}Usage:${colors.reset}
+  npx everything-opencode [command] [options]
+
+${colors.bold}Commands:${colors.reset}
+  ${colors.cyan}install${colors.reset} (default)    Configure OpenCode (agents, skills, commands, rules, hooks)
+  ${colors.cyan}doctor${colors.reset}               Check OpenCode, active sessions, and Graphify health
+  ${colors.cyan}graphify [action]${colors.reset}    Manage Graphify AST knowledge graph
+      ${colors.gray}init${colors.reset}             Build AST knowledge graph (--code-only)
+      ${colors.gray}query <text>${colors.reset}      Query the codebase knowledge graph
+      ${colors.gray}status${colors.reset}           Show graph node/edge statistics
+  ${colors.cyan}preset list${colors.reset}          List available model presets
+  ${colors.cyan}help${colors.reset}                 Show this help message
+  ${colors.cyan}version${colors.reset}              Show version number
+
+${colors.bold}Options:${colors.reset}
+  -p, --project            Install for current project (.opencode/) [default]
+  -g, --global             Install globally (~/.config/opencode/)
+  --preset <name>          Model preset (inherit | anthropic | openai | google | explabs | github)
+  --dry-run                Simulate installation without writing changes
+  -h, --help               Display help
+  -v, --version            Display version
+
+${colors.bold}Examples:${colors.reset}
+  npx everything-opencode
+  npx everything-opencode install --global
+  npx everything-opencode install --preset google
+  npx everything-opencode doctor
+  npx everything-opencode graphify init
+  npx everything-opencode graphify query "authMiddleware"
+`);
+}
+
+export async function runCli(argv = process.argv.slice(2)) {
+  const args = [...argv];
+  const command = args[0] && !args[0].startsWith('-') ? args.shift() : 'install';
+
+  // Flags
+  const isGlobal = args.includes('-g') || args.includes('--global');
+  const dryRun = args.includes('--dry-run');
+  const presetIndex = args.indexOf('--preset');
+  const preset = presetIndex !== -1 && args[presetIndex + 1] ? args[presetIndex + 1] : 'inherit';
+
+  if (args.includes('-h') || args.includes('--help') || command === 'help') {
+    showHelp();
+    return 0;
+  }
+
+  if (args.includes('-v') || args.includes('--version') || command === 'version') {
+    console.log(`everything-opencode v${getVersion()}`);
+    return 0;
+  }
+
+  try {
+    switch (command) {
+      case 'install':
+      case 'init':
+      case 'setup': {
+        const installer = new OpenCodeInstaller({
+          global: isGlobal,
+          preset,
+          dryRun,
+          cwd: process.cwd()
+        });
+        await installer.install();
+        return 0;
+      }
+
+      case 'doctor':
+      case 'check': {
+        await runDoctor({ cwd: process.cwd() });
+        return 0;
+      }
+
+      case 'graphify': {
+        const subAction = args[0] || 'status';
+        const runner = new GraphifyRunner(process.cwd());
+
+        if (subAction === 'init' || subAction === 'build' || subAction === 'extract') {
+          log.info('Building Graphify AST knowledge graph...');
+          const out = runner.extractAst();
+          console.log(out || 'Extraction completed.');
+          const stats = runner.getStats();
+          if (stats.exists) {
+            log.success(`Graph created: ${stats.nodes} nodes, ${stats.edges} edges, ${stats.communities} communities.`);
+          }
+        } else if (subAction === 'query') {
+          const queryText = args.slice(1).join(' ');
+          if (!queryText) {
+            log.error('Please specify a query: npx everything-opencode graphify query "<text>"');
+            return 1;
+          }
+          const result = runner.query(queryText);
+          console.log(result);
+        } else if (subAction === 'status') {
+          const stats = runner.getStats();
+          if (stats.exists) {
+            log.success(`Knowledge graph active: ${stats.nodes} nodes, ${stats.edges} edges.`);
+            console.log(`  Path: ${stats.path}`);
+            console.log(`  Architecture report: ${stats.hasReport ? 'Available' : 'Not generated'}`);
+          } else {
+            log.warn('No knowledge graph found in current directory.');
+            console.log('Run: npx everything-opencode graphify init');
+          }
+        } else {
+          log.error(`Unknown graphify action: ${subAction}. Use 'init', 'query', or 'status'.`);
+          return 1;
+        }
+        return 0;
+      }
+
+      case 'preset': {
+        const sub = args[0] || 'list';
+        if (sub === 'list') {
+          log.header('Available Model Presets');
+          for (const [key, p] of Object.entries(MODEL_PRESETS)) {
+            console.log(`${colors.bold}${colors.cyan}${key}${colors.reset}: ${p.name}`);
+            console.log(`  ${colors.gray}${p.description}${colors.reset}`);
+            if (Object.keys(p.models).length > 0) {
+              const sample = Object.entries(p.models).slice(0, 3).map(([a, m]) => `${a}->${m}`).join(', ');
+              console.log(`  Models: ${sample}...`);
+            }
+            console.log();
+          }
+        }
+        return 0;
+      }
+
+      default:
+        log.error(`Unknown command: ${command}`);
+        showHelp();
+        return 1;
+    }
+  } catch (err) {
+    log.error(`Execution failed: ${err.message}`);
+    log.debug(err.stack);
+    return 1;
+  }
+}

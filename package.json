@@ -1,0 +1,48 @@
+{
+  "name": "everything-opencode",
+  "version": "1.0.0",
+  "description": "The complete collection of OpenCode coding agent configs: agents, skills, hooks, commands, rules, and Graphify code intelligence.",
+  "type": "module",
+  "main": "./src/index.js",
+  "bin": {
+    "everything-opencode": "./bin/cli.js",
+    "opencode-everything": "./bin/cli.js"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./plugin": "./src/plugin/index.js",
+    "./agents": "./src/agents/index.js",
+    "./commands": "./src/commands/index.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "skills",
+    "rules",
+    "templates",
+    "LICENSE",
+    "README.md",
+    "FLAWS_FIXED.md"
+  ],
+  "scripts": {
+    "test": "node tests/run-all.js",
+    "start": "node bin/cli.js",
+    "doctor": "node bin/cli.js doctor",
+    "graphify": "node bin/cli.js graphify"
+  },
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "graphify",
+    "claude-code",
+    "everything-claude-code",
+    "ai-agent",
+    "coding-agent",
+    "developer-tools"
+  ],
+  "author": "WorldFlow & Antigravity",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

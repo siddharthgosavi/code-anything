@@ -1,0 +1,11 @@
+node_modules/
+everything-claude-code-upstream/
+graphify-out/
+.graphify_analysis.json
+.graphify_root
+.opencode/
+*.log
+*.tmp
+.DS_Store
+dist/
+coverage/
