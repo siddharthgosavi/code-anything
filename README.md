@@ -241,6 +241,16 @@ Includes test coverage for:
 
 ---
 
+## Credits & Acknowledgements
+
+This project was built with the help of several amazing open-source projects:
+
+- **[everything-claude-code](https://github.com/worldflowai/everything-claude-code)**: We adapted our core lifecycle hooks, routing pipeline, and agent orchestration patterns from this battle-tested repository.
+- **[Graphify](https://github.com/worldflowai/graphify)**: Powers all of the zero-token AST code intelligence and semantic blast-radius analysis within the `graph-analyst` and `doctor` commands.
+- **[Agency Agents](https://github.com/msitarzewski/agency-agents)**: Provided the incredible 279 specialized agent personas and prompts across 18 divisions, which we migrated into the OpenCode schema to enable Tier-2 routing.
+
+---
+
 ## License
 
 MIT © [WorldFlow & Antigravity Contributors](LICENSE)

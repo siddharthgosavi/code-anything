@@ -27,7 +27,7 @@ export function listDivisions() {
   const divisions = catalog.divisions || {};
 
   log.header('Agency Agents Divisions (279 Total Specialists)');
-  console.log('Browse curated specialized subagents ready for OpenCode:\n');
+  console.log('Browse curated specialized subagents ready for OpenCode (adapted from msitarzewski/agency-agents):\n');
 
   let totalAgents = 0;
   for (const [key, meta] of Object.entries(divisions)) {
