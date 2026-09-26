@@ -54,6 +54,8 @@ ${colors.bold}Options:${colors.reset}
   --division <name>        Target agency agents division (e.g. engineering, security, design)
   --all                    Select all agents
   --dry-run                Simulate installation without writing changes
+  --json                   Output results in JSON format
+  --verbose                Enable verbose logging/details
   -h, --help               Display help
   -v, --version            Display version
 
@@ -77,6 +79,8 @@ export async function runCli(argv = process.argv.slice(2)) {
   // Flags
   const isGlobal = args.includes('-g') || args.includes('--global');
   const dryRun = args.includes('--dry-run');
+  const isJson = args.includes('--json');
+  const isVerbose = args.includes('--verbose');
   const presetIndex = args.indexOf('--preset');
   const preset = presetIndex !== -1 && args[presetIndex + 1] ? args[presetIndex + 1] : 'inherit';
 
@@ -154,8 +158,12 @@ export async function runCli(argv = process.argv.slice(2)) {
           log.error('Please specify a prompt: npx everything-opencode route "<task description>"');
           return 1;
         }
-        const result = routePrompt(promptText);
-        displayRouteResult(result);
+        const result = routePrompt(promptText, { verbose: isVerbose });
+        if (isJson) {
+          console.log(JSON.stringify(result, null, 2));
+        } else {
+          displayRouteResult(result, { verbose: isVerbose });
+        }
         return 0;
       }
 
@@ -185,8 +193,12 @@ export async function runCli(argv = process.argv.slice(2)) {
             log.error('Please specify a prompt: npx everything-opencode agency route "<task description>"');
             return 1;
           }
-          const result = routePrompt(promptText);
-          displayRouteResult(result);
+          const result = routePrompt(promptText, { verbose: isVerbose });
+          if (isJson) {
+            console.log(JSON.stringify(result, null, 2));
+          } else {
+            displayRouteResult(result, { verbose: isVerbose });
+          }
         } else if (subAction === 'install' || subAction === 'add') {
           const positionalAgents = args.filter((a, idx) => {
             if (a.startsWith('-')) return false;
@@ -238,7 +250,8 @@ export async function runCli(argv = process.argv.slice(2)) {
   }
 }
 
-export function displayRouteResult(result) {
+export function displayRouteResult(result, options = {}) {
+  const isVerbose = options.verbose;
   log.header(`Agent Selection for: "${result.prompt}"`);
 
   const p = result.primaryAgent;
@@ -247,6 +260,9 @@ export function displayRouteResult(result) {
   console.log(`  ${colors.gray}${p.description}${colors.reset}`);
   if (p.slashCommand) {
     console.log(`  Slash Command: ${colors.cyan}${p.slashCommand}${colors.reset}`);
+  }
+  if (isVerbose && p.matchDetails) {
+    console.log(`  ${colors.yellow}Match Details:${colors.reset} [score: ${p.score}] ${p.matchDetails.join(', ')}`);
   }
   console.log();
 
@@ -260,6 +276,9 @@ export function displayRouteResult(result) {
     console.log(`${colors.bold}Alternative Candidates:${colors.reset}`);
     for (const c of result.candidates.slice(1, 4)) {
       console.log(`  • ${colors.cyan}@${c.slug}${colors.reset} [score: ${c.score}] - ${c.name} (${c.division})`);
+      if (isVerbose && c.matchDetails) {
+        console.log(`      ${colors.gray}Details: ${c.matchDetails.join(', ')}${colors.reset}`);
+      }
     }
     console.log();
   }

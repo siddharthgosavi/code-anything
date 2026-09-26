@@ -192,15 +192,27 @@ function hasWord(text, word) {
   return new RegExp('(^|[^a-z0-9_])' + escaped + '([^a-z0-9_]|$)', 'i').test(text);
 }
 
+function stem(w) {
+  if (w.length > 5) {
+    if (w.endsWith('ing')) return w.slice(0, -3);
+    if (w.endsWith('tion')) return w.slice(0, -4);
+    if (w.endsWith('ies')) return w.slice(0, -3) + 'y';
+    if (w.endsWith('ed')) return w.slice(0, -2);
+    if (w.endsWith('s') && !w.endsWith('ss')) return w.slice(0, -1);
+  }
+  return w;
+}
+
 /**
- * Clean and tokenize a prompt string
+ * Clean, tokenize, and stem a prompt string
  */
 function tokenize(text) {
   return String(text || '')
     .toLowerCase()
     .replace(/[^a-z0-9\s_-]/g, ' ')
     .split(/\s+/)
-    .filter(Boolean);
+    .filter(Boolean)
+    .map(stem);
 }
 
 /**
@@ -215,7 +227,7 @@ function scoreAgent(promptTokens, promptLower, agent) {
     promptTokens.some(t => ['code', 'function', 'test', 'build', 'compile', 'refactor', 'bug', 'error', 'table', 'migration', 'deploy', 'cluster', 'cloud', 'pipeline'].includes(t));
 
   // 1. Slug exact match or partial match
-  const slugTokens = agent.slug.split('-');
+  const slugTokens = agent.slug.split('-').map(stem);
   let matchedSlugCount = 0;
   for (const st of slugTokens) {
     if (promptTokens.includes(st) && st.length > 2) {

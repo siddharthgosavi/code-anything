@@ -45,6 +45,9 @@ export async function runDoctor(options = {}) {
       console.log(`    - Edges: ${colors.bold}${stats.edges}${colors.reset}`);
       console.log(`    - Communities: ${colors.bold}${stats.communities}${colors.reset}`);
       console.log(`    - Architecture report: ${stats.hasReport ? colors.green + 'Available' + colors.reset : colors.gray + 'Not yet generated' + colors.reset}`);
+      
+      const savedTokens = Math.round((stats.nodes * 150 + stats.edges * 50) / 1000);
+      console.log(`    - ${colors.cyan}Context Savings:${colors.reset} ~${savedTokens}k tokens avoided per query vs. blind code reading`);
     } else {
       console.log(`  ${colors.yellow}!${colors.reset} No project graph built yet.`);
       console.log(`    Run: ${colors.cyan}npx everything-opencode graphify init${colors.reset}`);

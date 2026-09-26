@@ -5,12 +5,28 @@ import { execSafe } from '../lib/utils.js';
 let toolCallCount = 0;
 let graphifyReminded = false;
 let compactReminded = false;
+let toolHistory = [];
+
+const CIRCUIT_BREAKER_LIMIT = 5;
+const MAX_TOTAL_CALLS = 150;
 
 /**
  * Handle tool.execute.before lifecycle event
  */
 export async function onToolExecuteBefore(input, output, { directory = process.cwd() } = {}) {
   toolCallCount++;
+
+  if (toolCallCount >= MAX_TOTAL_CALLS) {
+    throw new Error(`[everything-opencode] CIRCUIT BREAKER TRIPPED: Hard limit of ${MAX_TOTAL_CALLS} tool calls reached to prevent runaway spending. Please review progress and restart.`);
+  }
+
+  const callSignature = `${input.tool}:${JSON.stringify(output.args || input.args || {}).substring(0, 100)}`;
+  toolHistory.push(callSignature);
+  if (toolHistory.length > CIRCUIT_BREAKER_LIMIT) toolHistory.shift();
+
+  if (toolHistory.length === CIRCUIT_BREAKER_LIMIT && new Set(toolHistory).size === 1) {
+    throw new Error(`[everything-opencode] CIRCUIT BREAKER TRIPPED: Detected ${CIRCUIT_BREAKER_LIMIT} identical consecutive tool calls ("${input.tool}"). Aborting runaway loop.`);
+  }
 
   // 1. Graphify Code Intelligence check
   const graphJsonPath = path.join(directory, 'graphify-out', 'graph.json');

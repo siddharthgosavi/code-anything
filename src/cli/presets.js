@@ -88,6 +88,38 @@ export const MODEL_PRESETS = {
       "doc-updater": "github-copilot/gpt-4o-mini",
       "graph-analyst": "github-copilot/claude-3.7-sonnet"
     }
+  },
+  ollama: {
+    name: "Ollama (Local)",
+    description: "Local models via Ollama. Requires ollama running locally. Assumes Llama 3.3 for planning, Qwen 2.5 Coder for dev.",
+    models: {
+      planner: "ollama/llama3.3",
+      architect: "ollama/llama3.3",
+      "code-reviewer": "ollama/qwen2.5-coder:32b",
+      "security-reviewer": "ollama/llama3.3",
+      "tdd-guide": "ollama/qwen2.5-coder:32b",
+      "build-error-resolver": "ollama/qwen2.5-coder:32b",
+      "e2e-runner": "ollama/llama3.2",
+      "refactor-cleaner": "ollama/qwen2.5-coder:7b",
+      "doc-updater": "ollama/llama3.2",
+      "graph-analyst": "ollama/llama3.3"
+    }
+  },
+  vllm: {
+    name: "vLLM (Local API)",
+    description: "Local or self-hosted vLLM API. Defaults to Llama 3 70B and Qwen 2.5 Coder 32B.",
+    models: {
+      planner: "vllm/meta-llama/Meta-Llama-3-70B-Instruct",
+      architect: "vllm/meta-llama/Meta-Llama-3-70B-Instruct",
+      "code-reviewer": "vllm/Qwen/Qwen2.5-Coder-32B-Instruct",
+      "security-reviewer": "vllm/meta-llama/Meta-Llama-3-70B-Instruct",
+      "tdd-guide": "vllm/Qwen/Qwen2.5-Coder-32B-Instruct",
+      "build-error-resolver": "vllm/Qwen/Qwen2.5-Coder-32B-Instruct",
+      "e2e-runner": "vllm/meta-llama/Meta-Llama-3-8B-Instruct",
+      "refactor-cleaner": "vllm/Qwen/Qwen2.5-Coder-7B-Instruct",
+      "doc-updater": "vllm/meta-llama/Meta-Llama-3-8B-Instruct",
+      "graph-analyst": "vllm/meta-llama/Meta-Llama-3-70B-Instruct"
+    }
   }
 };
 
