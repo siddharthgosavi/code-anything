@@ -6,23 +6,17 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)
+[![npm version](https://img.shields.io/npm/v/code-anything.svg)](https://www.npmjs.com/package/code-anything)
 [![CI](https://github.com/siddharthgosavi/code-anything/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/siddharthgosavi/code-anything/actions/workflows/ci.yml)
 
 ## Status
 
-**Pre-launch / install-from-source.** Honest scope of claims:
+**v1.0.0 published to npm.** Honest scope of claims:
 - ✅ Tested: 12 suites incl. routing golden-set eval, catalog parity guard, and hook safety — see `npm test` and [CI](.github/workflows/ci.yml).
 - ⚠️ Routing accuracy is a **regression guard** on a 44-case golden set ([ADR-002](docs/adr/ADR-002-deterministic-router-with-eval-gate.md)), not a semantic-quality claim; deterministic v1 scorer.
 - ⚠️ Built against OpenCode plugin API `1.18.x`; relies on `experimental.session.compacting` (unstable by name).
-- 🔲 **npm publish pending.** The package is renamed `code-anything` ([ADR-004](docs/adr/ADR-004-package-rename-code-anything.md)) and the name is free on npm, but not yet published. Until the first release, install from source:
-
-  ```bash
-  npm install -g github:siddharthgosavi/code-anything
-  # or, from a local clone:
-  git clone https://github.com/siddharthgosavi/code-anything && cd code-anything && npm link
-  ```
-
-  Once published, `npx code-anything` becomes the one-command path.
+- ✅ **`npx code-anything` is live** ([npm](https://www.npmjs.com/package/code-anything)). The package was renamed from `everything-opencode` ([ADR-004](docs/adr/ADR-004-package-rename-code-anything.md)).
+- 🔲 CI publishes future `v*` tags automatically once an `NPM_TOKEN` repo secret is configured (or npm trusted publishing); v1.0.0 was published manually.
 
 ---
 
@@ -30,7 +24,7 @@
 
 Adapted from the patterns of [everything-claude-code](https://github.com/worldflowai/everything-claude-code), re-architected for OpenCode with native **Graphify Code Intelligence**, model flexibility, lifecycle hooks that never touch your sessions, and test-gated configuration merges.
 
-Once published (or with `npm link` from a clone), configure OpenCode in your project:
+Configure OpenCode in your project with one command:
 
 ```bash
 npx code-anything

@@ -210,6 +210,6 @@ Status of the launch-blockers from §5. Verified by `npm test` (10 suites, 0 fai
 ### Still open (not silently "fixed")
 - **ARCH-1 full:** markdown→JS codegen still pending (parity guard is the safety net meanwhile).
 - **ENG-2 overfit caveat:** the golden set was calibrated from observed behavior, so 100% top-1 is a regression guard, **not** a semantic-accuracy claim — recorded honestly in ADR-002.
-- **Release ops (non-code):** first `npm publish`, GitHub release/tag `v1.0.0`, repo About description + social preview image (point at `assets/og.png`), and real shields badges (npm version, CI status) once they can resolve.
+- ~~**Release ops**~~ ✅ Mostly done 2026-09-27: `code-anything@1.0.0` published to npm (authored Siddharth Gosavi), repo public with description/homepage, real CI + npm badges in README. Remaining: GitHub release/tag flow for v1.0.1+ (CI publish job expects `v*` tags + `NPM_TOKEN` secret — do NOT tag `v1.0.0`, npm rejects re-publish), repo social-preview image (`assets/og.png`), and a local-dev note that testing runs from the repo (`node bin/cli.js`), not a global install.
 - **Local self-hosting gap:** `.opencode/opencode.json` lists plugin `code-anything`, which won't resolve from npm until publish; until then, local plugin loading needs the `npm link` path or a file: reference. Disclosed rather than papered over.
 
