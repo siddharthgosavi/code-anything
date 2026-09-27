@@ -71,21 +71,42 @@ export class OpenCodeEnvironment {
         cmdOutput = execSafe('ps aux | grep opencode | grep -v grep') || '';
       }
 
-      const sessions = [];
-      const lines = cmdOutput.split('\n').filter(Boolean);
-      for (const line of lines) {
-        const sessionMatch = line.match(/-s\s+([^\s]+)/) || line.match(/--session\s+([^\s]+)/);
-        const pidMatch = line.match(/^\S+\s+(\d+)/);
-        sessions.push({
-          raw: line.trim(),
-          pid: pidMatch ? pidMatch[1] : null,
-          sessionId: sessionMatch ? sessionMatch[1] : 'interactive/daemon'
-        });
-      }
-      return sessions;
+      return this.parseSessions(cmdOutput, isWindows);
     } catch {
       return [];
     }
+  }
+
+  /**
+   * Parse `ps aux` (POSIX) or `tasklist /FO CSV` (Windows) output into
+   * session records. Pure function for testability.
+   * Only entries with a numeric PID are returned — noise lines like
+   * `INFO: No tasks...` or the ps header must never masquerade as sessions.
+   */
+  parseSessions(cmdOutput, isWindows = false) {
+    const sessions = [];
+    for (const line of (cmdOutput || '').split(/\r?\n/)) {
+      if (!line.trim()) continue;
+      let pid = null;
+      let command = '';
+      if (isWindows) {
+        // CSV: "opencode.exe","1234","Console","1","50,000 K"
+        const m = line.match(/^"([^"]+)"\s*,\s*"(\d+)"/);
+        if (m) { command = m[1]; pid = m[2]; }
+      } else {
+        // ps aux: USER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMAND...
+        const m = line.match(/^\S+\s+(\d+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(.*)$/);
+        if (m) { pid = m[1]; command = m[2]; }
+      }
+      if (!pid) continue;
+      const sessionMatch = command.match(/-s\s+([^\s]+)/) || command.match(/--session\s+([^\s]+)/);
+      sessions.push({
+        raw: line.trim(),
+        pid: Number(pid),
+        sessionId: sessionMatch ? sessionMatch[1] : 'interactive/daemon'
+      });
+    }
+    return sessions;
   }
 
   /**
