@@ -10,7 +10,7 @@ export async function testRouter() {
   // 2. Test: Planning intent
   const planResult = routePrompt('I need a phased step-by-step roadmap to migrate our REST API to GraphQL');
   assert.ok(planResult.success, 'Routing should succeed');
-  assert.ok(['planner', 'architect', 'graphql-architect'].includes(planResult.primaryAgent.slug), 'Should route to planner, architect, or graphql-architect');
+  assert.ok(['planner', 'architect', 'api-platform-engineer'].includes(planResult.primaryAgent.slug), 'Should route to planner, architect, or the API platform specialist');
   assert.ok(planResult.workflow.length >= 2, 'Should provide a multi-agent workflow');
   console.log('  ✓ Planning & GraphQL intent correctly routed:', planResult.primaryAgent.slug);
 

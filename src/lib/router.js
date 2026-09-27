@@ -181,15 +181,54 @@ const GENERIC_SLUG_TOKENS = new Set([
 
 const TECH_IDENTIFIERS = [
   'postgresql', 'postgres', 'mysql', 'sqlite', 'mongodb', 'redis', 'supabase', 'planetscale',
-  'kubernetes', 'k8s', 'helm', 'docker', 'terraform', 'graphql', 'rest', 'playwright', 'cypress',
+  'kubernetes', 'k8s', 'helm', 'docker', 'compose', 'terraform', 'graphql', 'rest', 'api',
+  'playwright', 'cypress',
   'react', 'vue', 'angular', 'nextjs', 'typescript', 'javascript', 'python', 'rust', 'golang',
   'c++', 'java', 'wcag', 'accessibility', 'a11y', 'indexing', 'indexes', 'schema design',
-  'sql', 'jwt', 'oauth', 'owasp', 'vite', 'webpack', 'esbuild', 'pnpm', 'npm', 'yarn', 'bun'
+  'sql', 'jwt', 'oauth', 'owasp', 'vite', 'webpack', 'esbuild', 'pnpm', 'npm', 'yarn', 'bun',
+  'ci/cd', 'pipeline', 'deploy', 'infrastructure', 'cluster', 'microservice', 'middleware'
 ];
+
+/**
+ * ENG-1: Curated domain keyword overrides for the highest-value Tier-2
+ * agency agents. The Tier-2 catalog ships only short descriptions, so
+ * pure token-overlap scoring lets persona agents hijack technical prompts
+ * (e.g. "docker compose" -> blender-add-on-engineer). Explicit triggers
+ * keep the scorer deterministic while we work toward embedding scoring.
+ * Matched with the same rule as Tier-1 keywords (score 4.0 x weight).
+ */
+export const AGENCY_KEYWORD_OVERRIDES = {
+  'database-optimizer': ['postgres', 'postgresql', 'sql', 'query', 'queries', 'indexing', 'indexes', 'schema', 'database'],
+  'database-reliability-engineer': ['database', 'replication', 'backup', 'postgres', 'mysql', 'failover'],
+  'devops-automator': ['devops', 'ci/cd', 'pipeline', 'deploy', 'kubernetes', 'helm', 'docker', 'compose', 'terraform', 'infrastructure', 'cluster', 'vpc', 'github actions'],
+  'platform-engineer': ['platform', 'kubernetes', 'terraform', 'helm', 'ci/cd', 'internal developer', 'paved road', 'docker'],
+  'sre-site-reliability-engineer': ['sre', 'slo', 'error budget', 'observability', 'on-call', 'incident', 'reliability'],
+  'api-platform-engineer': ['graphql', 'rest', 'endpoint', 'endpoints', 'api', 'resolvers', 'schema', 'openapi', 'versioning', 'middleware', 'rate limit'],
+  'backend-architect': ['backend', 'microservice', 'microservices', 'api', 'service', 'architecture'],
+  'ai-engineer': ['ai', 'ml', 'model', 'models', 'fine-tune', 'finetune', 'llm', 'training', 'inference', 'mlflow', 'deployment of model', 'serving'],
+  'data-engineer': ['etl', 'elt', 'spark', 'airflow', 'dbt', 'lakehouse', 'data pipeline', 'streaming'],
+  'rag-pipeline-engineer': ['rag', 'embedding', 'embeddings', 'vector', 'pinecone', 'weaviate', 'chunking', 'retrieval'],
+  'prompt-engineer': ['prompt', 'prompting', 'system prompt', 'few-shot'],
+  'frontend-developer': ['react', 'nextjs', 'vue', 'css', 'ui', 'component', 'components', 'accessibility', 'web vitals', 'bundle'],
+  'test-automation-engineer': ['playwright', 'cypress', 'selenium', 'test automation', 'e2e'],
+  'ai-generated-code-security-auditor': ['supabase', 'row level security', 'rls', 'vibe coded', 'prompt injection'],
+  'section-508-accessibility-specialist': ['wcag', 'accessibility', 'a11y', 'screen reader', '508']
+};
 
 function hasWord(text, word) {
   const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
   return new RegExp('(^|[^a-z0-9_])' + escaped + '([^a-z0-9_]|$)', 'i').test(text);
+}
+
+/**
+ * ENG-1: Word-boundary PREFIX match for technology identifiers, so the
+ * prompt says "postgres" and the description says "PostgreSQL" (or
+ * "indexes" vs "indexing", "deploy" vs "deployment") still match.
+ * Prefix-only — never substring ('test' must not match 'latest').
+ */
+function hasWordPrefix(text, word) {
+  const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  return new RegExp('(^|[^a-z0-9_])' + escaped, 'i').test(text);
 }
 
 function stem(w) {
@@ -216,51 +255,81 @@ function tokenize(text) {
 }
 
 /**
- * Compute semantic match score for an agent
+ * Compute semantic match score for an agent.
+ *
+ * Scoring model (deterministic v1 — see ADR-002):
+ *  - Tier-1 agents and Tier-2 agents with curated overrides: keyword hits
+ *    dominate (4.0 x weight each) so explicit domain triggers decide.
+ *  - Tier-2 without overrides: slug/name tokens contribute at reduced value
+ *    (1.5 generic / 2.5 specific) and are only counted when the prompt is
+ *    technically aligned (tech-affinity), so persona agents ("service",
+ *    "add-on", "pipeline" in a slug) can't hijack dev prompts.
+ *  - Description overlap is length-normalized, so long descriptions don't
+ *    win by volume.
+ * Trade-off: magic numbers remain (v1); the golden-set eval is the guard.
  */
 function scoreAgent(promptTokens, promptLower, agent) {
   let score = 0;
   const matchDetails = [];
 
   const division = agent.division || 'core';
-  const isTechPrompt = TECH_IDENTIFIERS.some(t => hasWord(promptLower, t)) ||
+  const isTechPrompt = TECH_IDENTIFIERS.some(t => hasWordPrefix(promptLower, t)) ||
     promptTokens.some(t => ['code', 'function', 'test', 'build', 'compile', 'refactor', 'bug', 'error', 'table', 'migration', 'deploy', 'cluster', 'cloud', 'pipeline'].includes(t));
 
-  // 1. Slug exact match or partial match
+  const overrideKeywords = AGENCY_KEYWORD_OVERRIDES[agent.slug];
+  const isTier2Persona = !agent.keywords && !overrideKeywords;
+
+  // 1. Slug tokens — deflated and gated for persona agents (ENG-1 fix:
+  // previously a 3.5-per-token + 4.0 bonus let 'add'+'on' from
+  // blender-add-on-engineer beat every devops agent on "docker compose").
   const slugTokens = agent.slug.split('-').map(stem);
   let matchedSlugCount = 0;
   for (const st of slugTokens) {
     if (promptTokens.includes(st) && st.length > 2) {
       matchedSlugCount++;
-      const val = GENERIC_SLUG_TOKENS.has(st) ? 1.0 : 3.5;
-      score += val;
-      matchDetails.push(`slug token: ${st}`);
+      let val = GENERIC_SLUG_TOKENS.has(st) ? 1.0 : 3.5;
+      if (isTier2Persona) {
+        if (!isTechPrompt) val = 0;
+        else val = Math.min(val, 2.0);
+      }
+      if (val > 0) {
+        score += val;
+        matchDetails.push(`slug token: ${st}`);
+      }
     }
   }
-  if (matchedSlugCount >= 2) {
-    score += 4.0; // Compound slug match bonus
+  if (matchedSlugCount >= 2 && !isTier2Persona) {
+    score += 4.0;
+    matchDetails.push('compound slug match');
   }
   if (promptLower.includes(agent.slug)) {
     score += 10.0;
     matchDetails.push(`exact slug: ${agent.slug}`);
   }
 
-  // 2. Name match
+  // 2. Name tokens — same persona gating as slug
   if (agent.name) {
     const nameTokens = tokenize(agent.name);
     for (const nt of nameTokens) {
       if (promptTokens.includes(nt) && nt.length > 2) {
-        const val = GENERIC_SLUG_TOKENS.has(nt) ? 0.5 : 2.0;
-        score += val;
-        matchDetails.push(`name token: ${nt}`);
+        let val = GENERIC_SLUG_TOKENS.has(nt) ? 0.5 : 2.0;
+        if (isTier2Persona) {
+          if (!isTechPrompt) val = 0;
+          else val = Math.min(val, 1.0);
+        }
+        if (val > 0) {
+          score += val;
+          matchDetails.push(`name token: ${nt}`);
+        }
       }
     }
   }
 
-  // 3. Keywords match (for core agents)
-  if (agent.keywords) {
-    for (const kw of agent.keywords) {
-      if (hasWord(promptLower, kw)) {
+  // 3. Keywords: Tier-1 native keywords OR curated Tier-2 overrides
+  const keywords = agent.keywords || overrideKeywords;
+  if (keywords) {
+    for (const kw of keywords) {
+      if (hasWord(promptLower, kw) || (kw.length > 4 && hasWordPrefix(promptLower, kw))) {
         score += 4.0 * (agent.weight || 1.0);
         matchDetails.push(`keyword: "${kw}"`);
       }
@@ -271,29 +340,44 @@ function scoreAgent(promptTokens, promptLower, agent) {
   if (agent.description) {
     const descLower = agent.description.toLowerCase();
     for (const tech of TECH_IDENTIFIERS) {
-      if (hasWord(promptLower, tech) && hasWord(descLower, tech)) {
+      if (hasWordPrefix(promptLower, tech) && hasWordPrefix(descLower, tech)) {
         score += 5.0;
         matchDetails.push(`tech match: ${tech}`);
       }
     }
 
+    // 5. Length-normalized description overlap
     const descTokens = tokenize(agent.description);
+    const stop = new Set(['with', 'from', 'that', 'this', 'have', 'your', 'expert', 'specialist', 'based', 'every', 'other', 'systems', 'building', 'across']);
+    let overlap = 0;
+    const seen = new Set();
     for (const dt of descTokens) {
-      if (promptTokens.includes(dt) && dt.length > 3) {
-        if (!['with', 'from', 'that', 'this', 'have', 'your', 'expert', 'specialist', 'based', 'every', 'other'].includes(dt)) {
-          score += 0.8;
-        }
+      if (dt.length > 3 && !stop.has(dt) && !seen.has(dt) && promptTokens.includes(dt)) {
+        overlap++;
+        seen.add(dt);
+      }
+    }
+    if (overlap > 0) {
+      const norm = overlap / Math.max(8, new Set(descTokens).size / 4);
+      const contribution = Math.min(4.0, norm * 4.0);
+      if (isTier2Persona && !isTechPrompt) {
+        // persona agents with mere vocabulary overlap stay silent
+      } else {
+        score += contribution;
+        if (contribution >= 1.0) matchDetails.push(`desc overlap: ${overlap} tokens`);
       }
     }
   }
 
-  // 5. Division domain weighting
+  // 6. Division domain weighting
   if (isTechPrompt) {
     if (TECHNICAL_DIVISIONS.has(division)) {
       score *= 1.35;
     } else if (NON_TECHNICAL_DIVISIONS.has(division)) {
       score *= 0.4;
     }
+  } else if (NON_TECHNICAL_DIVISIONS.has(division)) {
+    score *= 1.1; // business prompts still favor business divisions
   }
 
   return { score, matchDetails };

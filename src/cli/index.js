@@ -24,11 +24,11 @@ function getVersion() {
 
 function showHelp() {
   console.log(`
-${colors.bold}everything-opencode${colors.reset} v${getVersion()}
+${colors.bold}code-anything${colors.reset} v${getVersion()}
 Complete OpenCode coding agent configuration with Graphify code intelligence.
 
 ${colors.bold}Usage:${colors.reset}
-  npx everything-opencode [command] [options]
+  npx code-anything [command] [options]
 
 ${colors.bold}Commands:${colors.reset}
   ${colors.cyan}install${colors.reset} (default)    Configure OpenCode (agents, skills, commands, rules, hooks)
@@ -60,15 +60,15 @@ ${colors.bold}Options:${colors.reset}
   -v, --version            Display version
 
 ${colors.bold}Examples:${colors.reset}
-  npx everything-opencode
-  npx everything-opencode install --global
-  npx everything-opencode agency list
-  npx everything-opencode agency search "database"
-  npx everything-opencode agency install --division engineering
-  npx everything-opencode agency install database-optimizer rag-pipeline-engineer
-  npx everything-opencode doctor
-  npx everything-opencode graphify init
-  npx everything-opencode graphify query "authMiddleware"
+  npx code-anything
+  npx code-anything install --global
+  npx code-anything agency list
+  npx code-anything agency search "database"
+  npx code-anything agency install --division engineering
+  npx code-anything agency install database-optimizer rag-pipeline-engineer
+  npx code-anything doctor
+  npx code-anything graphify init
+  npx code-anything graphify query "authMiddleware"
 `);
 }
 
@@ -90,7 +90,7 @@ export async function runCli(argv = process.argv.slice(2)) {
   }
 
   if (args.includes('-v') || args.includes('--version') || command === 'version') {
-    console.log(`everything-opencode v${getVersion()}`);
+    console.log(`code-anything v${getVersion()}`);
     return 0;
   }
 
@@ -130,7 +130,7 @@ export async function runCli(argv = process.argv.slice(2)) {
         } else if (subAction === 'query') {
           const queryText = args.slice(1).join(' ');
           if (!queryText) {
-            log.error('Please specify a query: npx everything-opencode graphify query "<text>"');
+            log.error('Please specify a query: npx code-anything graphify query "<text>"');
             return 1;
           }
           const result = runner.query(queryText);
@@ -141,9 +141,12 @@ export async function runCli(argv = process.argv.slice(2)) {
             log.success(`Knowledge graph active: ${stats.nodes} nodes, ${stats.edges} edges.`);
             console.log(`  Path: ${stats.path}`);
             console.log(`  Architecture report: ${stats.hasReport ? 'Available' : 'Not generated'}`);
+          } else if (stats.corrupt) {
+            log.warn(`Knowledge graph file exists but is corrupt/unparseable: ${stats.path}`);
+            console.log('Rebuild with: npx code-anything graphify init');
           } else {
             log.warn('No knowledge graph found in current directory.');
-            console.log('Run: npx everything-opencode graphify init');
+            console.log('Run: npx code-anything graphify init');
           }
         } else {
           log.error(`Unknown graphify action: ${subAction}. Use 'init', 'query', or 'status'.`);
@@ -155,7 +158,7 @@ export async function runCli(argv = process.argv.slice(2)) {
       case 'route': {
         const promptText = args.filter(a => !a.startsWith('-')).join(' ');
         if (!promptText) {
-          log.error('Please specify a prompt: npx everything-opencode route "<task description>"');
+          log.error('Please specify a prompt: npx code-anything route "<task description>"');
           return 1;
         }
         const result = routePrompt(promptText, { verbose: isVerbose });
@@ -183,14 +186,14 @@ export async function runCli(argv = process.argv.slice(2)) {
         } else if (subAction === 'search' || subAction === 'find') {
           const query = args.filter(a => !a.startsWith('-')).join(' ');
           if (!query) {
-            log.error('Please specify a search query: npx everything-opencode agency search "<term>"');
+            log.error('Please specify a search query: npx code-anything agency search "<term>"');
             return 1;
           }
           searchAgents(query);
         } else if (subAction === 'route') {
           const promptText = args.filter(a => !a.startsWith('-')).join(' ');
           if (!promptText) {
-            log.error('Please specify a prompt: npx everything-opencode agency route "<task description>"');
+            log.error('Please specify a prompt: npx code-anything agency route "<task description>"');
             return 1;
           }
           const result = routePrompt(promptText, { verbose: isVerbose });

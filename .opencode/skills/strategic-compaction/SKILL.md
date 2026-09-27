@@ -24,4 +24,4 @@ Unchecked context growth causes:
 - When context exceeds ~40 tool calls, prepare for compaction by summarizing current state, open questions, and next steps.
 
 ### 3. Preserving Critical Decisions
-- The `everything-opencode` plugin hooks into OpenCode's `experimental.session.compacting` lifecycle event to dump critical working memory before compaction occurs, ensuring seamless continuation.
+- The `code-anything` plugin hooks into OpenCode's `experimental.session.compacting` lifecycle event to dump critical working memory before compaction occurs, ensuring seamless continuation.

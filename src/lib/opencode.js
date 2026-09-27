@@ -1,7 +1,7 @@
 import os from 'os';
 import path from 'path';
 import fs from 'fs';
-import { execSafe, hasExecutable, log } from './utils.js';
+import { execSafe, execArgv, hasExecutable, log } from './utils.js';
 import { safeReadJson } from './jsonc.js';
 
 export class OpenCodeEnvironment {

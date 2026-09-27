@@ -5,11 +5,13 @@ import { testPackageManager } from './package-manager.test.js';
 import { testSessionSafety } from './safety-session.test.js';
 import { testAgency } from './agency.test.js';
 import { testRouter } from './router.test.js';
+import { testRoutingEval } from './routing-eval.test.js';
+import { testCatalogParity } from './catalog-parity.test.js';
 import { testCli } from './cli.test.js';
 import { colors, log } from '../src/lib/utils.js';
 
 async function runAllTests() {
-  log.header('everything-opencode Test Suite');
+  log.header('code-anything Test Suite');
 
   const tests = [
     { name: 'Session Safety & Protection', fn: testSessionSafety },
@@ -19,6 +21,8 @@ async function runAllTests() {
     { name: 'Package Manager Detection', fn: testPackageManager },
     { name: 'Agency Agents Catalog & Installation', fn: testAgency },
     { name: 'Autonomous Agent Selection & Routing', fn: testRouter },
+    { name: 'Routing Golden-Set Eval (ENG-2)', fn: testRoutingEval },
+    { name: 'Catalog Parity (ARCH-1)', fn: testCatalogParity },
     { name: 'CLI Routing & Commands', fn: testCli }
   ];
 

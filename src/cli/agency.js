@@ -42,8 +42,8 @@ export function listDivisions() {
   }
 
   console.log(`\nTotal: ${colors.bold}${totalAgents}${colors.reset} agents across ${Object.keys(divisions).length} divisions.\n`);
-  console.log(`Run ${colors.cyan}npx everything-opencode agency list --division <name>${colors.reset} to inspect a division.`);
-  console.log(`Run ${colors.cyan}npx everything-opencode agency install --division <name>${colors.reset} to install.`);
+  console.log(`Run ${colors.cyan}npx code-anything agency list --division <name>${colors.reset} to inspect a division.`);
+  console.log(`Run ${colors.cyan}npx code-anything agency install --division <name>${colors.reset} to install.`);
 }
 
 /**
@@ -71,7 +71,7 @@ export function listDivisionAgents(divisionName) {
     console.log('');
   }
 
-  console.log(`Install these agents: ${colors.cyan}npx everything-opencode agency install --division ${divisionName}${colors.reset}`);
+  console.log(`Install these agents: ${colors.cyan}npx code-anything agency install --division ${divisionName}${colors.reset}`);
 }
 
 /**
@@ -118,7 +118,7 @@ export function searchAgents(query) {
     console.log(`... and ${results.length - 20} more matching agents.`);
   }
 
-  console.log(`To install: ${colors.cyan}npx everything-opencode agency install <slug>${colors.reset}`);
+  console.log(`To install: ${colors.cyan}npx code-anything agency install <slug>${colors.reset}`);
 }
 
 /**
@@ -175,7 +175,7 @@ export async function installAgencyAgents(options = {}) {
     }
   } else {
     log.error('Please specify agents to install, --division <name>, or --all.');
-    console.log(`Example: ${colors.cyan}npx everything-opencode agency install --division engineering${colors.reset}`);
+    console.log(`Example: ${colors.cyan}npx code-anything agency install --division engineering${colors.reset}`);
     return;
   }
 

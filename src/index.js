@@ -1,4 +1,4 @@
-import pluginDefault, { EverythingOpenCodePlugin, applyEverythingOpenCodeConfig } from './plugin/index.js';
+import pluginDefault, { CodeAnythingPlugin, applyCodeAnythingConfig } from './plugin/index.js';
 import { AGENTS } from './agents/index.js';
 import { COMMANDS } from './commands/index.js';
 import { MODEL_PRESETS } from './cli/presets.js';
@@ -6,8 +6,8 @@ import { loadAgencyCatalog, listDivisions, listDivisionAgents, searchAgents, ins
 import { routePrompt, CORE_AGENT_PATTERNS } from './lib/router.js';
 
 export {
-  EverythingOpenCodePlugin,
-  applyEverythingOpenCodeConfig,
+  CodeAnythingPlugin,
+  applyCodeAnythingConfig,
   AGENTS,
   COMMANDS,
   MODEL_PRESETS,

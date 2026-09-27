@@ -7,6 +7,6 @@ runCli().then((code) => {
     process.exit(code);
   }
 }).catch((err) => {
-  console.error('[everything-opencode] Fatal error:', err);
+  console.error('[code-anything] Fatal error:', err);
   process.exit(1);
 });

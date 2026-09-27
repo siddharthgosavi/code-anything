@@ -1,4 +1,4 @@
-import { execSync, spawn } from 'child_process';
+import { execSync, spawnSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
@@ -38,7 +38,10 @@ export const log = {
 };
 
 /**
- * Execute command safely, returning trimmed stdout or null on error.
+ * Execute a fixed command string via shell, returning trimmed stdout or null.
+ * WARNING: `command` is interpolated into a shell by the caller's runtime —
+ * only pass FULLY LITERAL strings here (no user/project input).
+ * Prefer execArgv() for anything with dynamic arguments.
  */
 export function execSafe(command, options = {}) {
   try {
@@ -56,12 +59,35 @@ export function execSafe(command, options = {}) {
 }
 
 /**
- * Check if a command/executable exists in PATH.
+ * Run an executable with an argv array and NO shell (spawnSync, shell:false).
+ * Immune to quoting/injection: arguments are passed as-is to the process.
+ * Returns trimmed stdout, or null if the binary is missing or exits non-zero.
+ */
+export function execArgv(command, args = [], options = {}) {
+  try {
+    const res = spawnSync(command, args, {
+      encoding: 'utf8',
+      timeout: options.timeout || 15000,
+      cwd: options.cwd,
+      stdio: ['pipe', 'pipe', 'pipe']
+    });
+    if (res.error || res.status !== 0) {
+      log.debug(`execArgv failed for: ${command} ${args.join(' ')} (${res.error?.message || `exit ${res.status}`})`);
+      return null;
+    }
+    return (res.stdout || '').trim();
+  } catch (err) {
+    log.debug(`execArgv threw for: ${command} (${err.message})`);
+    return null;
+  }
+}
+
+/**
+ * Check if a command/executable exists in PATH (no shell, argv form).
  */
 export function hasExecutable(name) {
-  const isWindows = process.platform === 'win32';
-  const checkCmd = isWindows ? `where ${name}` : `which ${name}`;
-  return execSafe(checkCmd) !== null;
+  const probe = process.platform === 'win32' ? 'where' : 'which';
+  return execArgv(probe, [name]) !== null;
 }
 
 /**

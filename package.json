@@ -1,12 +1,11 @@
 {
-  "name": "everything-opencode",
+  "name": "code-anything",
   "version": "1.0.0",
   "description": "The complete collection of OpenCode coding agent configs: agents, skills, hooks, commands, rules, and Graphify code intelligence.",
   "type": "module",
   "main": "./src/index.js",
   "bin": {
-    "everything-opencode": "./bin/cli.js",
-    "opencode-everything": "./bin/cli.js"
+    "code-anything": "./bin/cli.js"
   },
   "exports": {
     ".": "./src/index.js",
@@ -28,6 +27,7 @@
     "scripts",
     "skills",
     "templates",
+    "docs",
     "LICENSE",
     "README.md",
     "FLAWS_FIXED.md",
@@ -35,6 +35,7 @@
   ],
   "scripts": {
     "test": "node tests/run-all.js && node tests/lib/utils.test.js && node tests/lib/package-manager.test.js && node tests/hooks/hooks.test.js",
+    "eval:routing": "node --input-type=module -e \"import { testRoutingEval } from './tests/routing-eval.test.js'; await testRoutingEval();\"",
     "start": "node bin/cli.js",
     "doctor": "node bin/cli.js doctor",
     "graphify": "node bin/cli.js graphify"
@@ -47,9 +48,24 @@
     "coding-agent",
     "developer-tools"
   ],
-  "author": "WorldFlow & Antigravity",
+  "author": "Siddharth Gosavi <siddhugosavi89@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/siddharthgosavi/code-anything.git"
+  },
+  "homepage": "https://github.com/siddharthgosavi/code-anything#readme",
+  "bugs": {
+    "url": "https://github.com/siddharthgosavi/code-anything/issues"
+  },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "config": {
+    "opencodeVersion": ">=1.14.0 <=1.18.x"
+  },
+  "contributors": [
+    "WorldFlow & Antigravity (everything-claude-code patterns)",
+    "Graphify contributors"
+  ]
 }

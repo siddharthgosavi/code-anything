@@ -5,7 +5,7 @@ import { OpenCodeEnvironment } from '../lib/opencode.js';
 import { GraphifyRunner } from './graphify-runner.js';
 import { safeReadJson, safeWriteJson } from '../lib/jsonc.js';
 import { copyDirRecursive, log, colors } from '../lib/utils.js';
-import { applyEverythingOpenCodeConfig } from '../plugin/index.js';
+import { applyCodeAnythingConfig } from '../plugin/index.js';
 import { resolveAgentModel } from './presets.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -27,7 +27,7 @@ export class OpenCodeInstaller {
    * Run the complete installation workflow safely.
    */
   async install() {
-    log.header('everything-opencode Setup');
+    log.header('code-anything Setup');
     log.info(`Target mode: ${colors.bold}${this.target}${colors.reset}`);
     log.info(`Working directory: ${colors.bold}${this.cwd}${colors.reset}`);
     log.info(`Model preset: ${colors.bold}${this.preset}${colors.reset}`);
@@ -62,7 +62,7 @@ export class OpenCodeInstaller {
     config.$schema = config.$schema || 'https://opencode.ai/config.json';
 
     // Apply plugin, agent, command, skills, and compaction settings
-    applyEverythingOpenCodeConfig(config);
+    applyCodeAnythingConfig(config);
 
     // If a model preset was selected, apply models to registered agents
     if (this.preset !== 'inherit') {
@@ -76,7 +76,7 @@ export class OpenCodeInstaller {
 
     // Add plugin entry if not already present
     config.plugin = config.plugin || [];
-    const pluginName = 'everything-opencode';
+    const pluginName = 'code-anything';
     const hasPlugin = config.plugin.some(p => {
       if (typeof p === 'string') return p === pluginName;
       if (Array.isArray(p)) return p[0] === pluginName;
@@ -130,7 +130,7 @@ export class OpenCodeInstaller {
         log.success(`Existing codebase knowledge graph found: ${stats.nodes} nodes, ${stats.edges} edges.`);
       } else {
         log.info('No graphify-out/graph.json found yet in this workspace.');
-        log.info('Tip: Run "npx everything-opencode graphify init" to generate your codebase graph instantly.');
+        log.info('Tip: Run "npx code-anything graphify init" to generate your codebase graph instantly.');
       }
     } else {
       log.warn('Graphify CLI is not found in PATH.');

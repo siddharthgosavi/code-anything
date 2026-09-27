@@ -11,12 +11,18 @@ export async function runDoctor(options = {}) {
   const env = new OpenCodeEnvironment(cwd);
   const graphify = new GraphifyRunner(cwd);
 
-  log.header('everything-opencode Doctor');
+  log.header('code-anything Doctor');
 
   // 1. OpenCode Environment
   console.log(`${colors.bold}OpenCode CLI:${colors.reset}`);
   if (env.isInstalled()) {
     console.log(`  ${colors.green}✓${colors.reset} Installed (${env.getVersion()})`);
+    // ARCH-4: surface the declared compatibility contract from package.json
+    try {
+      const pkg = JSON.parse(fs.readFileSync(path.join(cwd, 'package.json'), 'utf8'));
+      const tested = pkg.config?.opencodeVersion;
+      if (tested) console.log(`  ${colors.gray}• Tested against OpenCode ${tested}.${colors.reset}`);
+    } catch { /* non-fatal */ }
   } else {
     console.log(`  ${colors.red}✗${colors.reset} opencode CLI not found in PATH`);
   }
@@ -48,9 +54,12 @@ export async function runDoctor(options = {}) {
       
       const savedTokens = Math.round((stats.nodes * 150 + stats.edges * 50) / 1000);
       console.log(`    - ${colors.cyan}Context Savings:${colors.reset} ~${savedTokens}k tokens avoided per query vs. blind code reading`);
+    } else if (stats.corrupt) {
+      console.log(`  ${colors.red}✗${colors.reset} graph.json exists but is corrupt/unparseable.`);
+      console.log(`    Rebuild: ${colors.cyan}npx code-anything graphify init${colors.reset}`);
     } else {
       console.log(`  ${colors.yellow}!${colors.reset} No project graph built yet.`);
-      console.log(`    Run: ${colors.cyan}npx everything-opencode graphify init${colors.reset}`);
+      console.log(`    Run: ${colors.cyan}npx code-anything graphify init${colors.reset}`);
     }
   } else {
     console.log(`  ${colors.yellow}!${colors.reset} Graphify CLI not installed.`);

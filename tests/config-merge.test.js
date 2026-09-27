@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { stripJsonComments, stripTrailingCommas, parseJsonc, safeReadJson, safeWriteJson } from '../src/lib/jsonc.js';
-import { applyEverythingOpenCodeConfig } from '../src/plugin/index.js';
+import { applyCodeAnythingConfig } from '../src/plugin/index.js';
 import { AGENTS } from '../src/agents/index.js';
 import { COMMANDS } from '../src/commands/index.js';
 
@@ -32,7 +32,7 @@ export async function testConfigMerge() {
 
   // 2. Non-destructive config augmentation
   const config = { ...parsed };
-  applyEverythingOpenCodeConfig(config);
+  applyCodeAnythingConfig(config);
 
   // Existing settings preserved
   assert.strictEqual(config.provider['my-llm'].apiKey, 'secret-key-123');
@@ -50,7 +50,7 @@ export async function testConfigMerge() {
   assert.strictEqual(Object.keys(config.command).length, Object.keys(COMMANDS).length);
 
   // Skills path added
-  assert.ok(config.skills.paths.length > 0, 'skills.paths must contain everything-opencode skills');
+  assert.ok(config.skills.paths.length > 0, 'skills.paths must contain code-anything skills');
   console.log('  ✓ Config merge preserves user keys and registers agents/commands/skills');
 
   // 3. Safe read and atomic backup write

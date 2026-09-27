@@ -1,0 +1,298 @@
+{
+  "$comment": "Routing golden set. Each case: prompt -> acceptable top-1 agent slugs (Tier-1 or Tier-2). Eval: tests/routing-eval.test.js. Keep deterministic; no provider calls.",
+  "minTop1Accuracy": 0.85,
+  "cases": [
+    {
+      "prompt": "create a phased roadmap for migrating our monolith to modular packages",
+      "accept": [
+        "planner"
+      ]
+    },
+    {
+      "prompt": "we need a step-by-step implementation plan with risks for the notifications rewrite",
+      "accept": [
+        "planner"
+      ]
+    },
+    {
+      "prompt": "requirements breakdown for launching a referral program",
+      "accept": [
+        "planner"
+      ]
+    },
+    {
+      "prompt": "how should we structure the strategy for this multi-phase rollout",
+      "accept": [
+        "planner"
+      ]
+    },
+    {
+      "prompt": "design the data model and module boundaries for the billing service",
+      "accept": [
+        "architect",
+        "backend-architect",
+        "database-optimizer",
+        "api-platform-engineer"
+      ]
+    },
+    {
+      "prompt": "system design for a scalable URL shortener with trade-offs",
+      "accept": [
+        "architect",
+        "backend-architect"
+      ]
+    },
+    {
+      "prompt": "should we split this into microservices or keep a modular monolith",
+      "accept": [
+        "architect",
+        "backend-architect"
+      ]
+    },
+    {
+      "prompt": "implement user login validation using red green refactor unit tests",
+      "accept": [
+        "tdd-guide"
+      ]
+    },
+    {
+      "prompt": "add unit tests first then write the pricing function",
+      "accept": [
+        "tdd-guide"
+      ]
+    },
+    {
+      "prompt": "test driven development for the coupon code feature",
+      "accept": [
+        "tdd-guide"
+      ]
+    },
+    {
+      "prompt": "increase coverage for the inventory module with test first approach",
+      "accept": [
+        "tdd-guide"
+      ]
+    },
+    {
+      "prompt": "the checkout throws a null pointer when cart is empty, reproduce and fix it",
+      "accept": [
+        "tdd-guide",
+        "build-error-resolver"
+      ]
+    },
+    {
+      "prompt": "fix the bug where session token is null after refresh",
+      "accept": [
+        "tdd-guide",
+        "build-error-resolver"
+      ]
+    },
+    {
+      "prompt": "review this pull request for code quality and maintainability",
+      "accept": [
+        "code-reviewer"
+      ]
+    },
+    {
+      "prompt": "diff critique before merging, check naming and edge cases",
+      "accept": [
+        "code-reviewer"
+      ]
+    },
+    {
+      "prompt": "audit authentication middleware for JWT vulnerability and OWASP injection risks",
+      "accept": [
+        "security-reviewer",
+        "application-security-engineer",
+        "security-architect"
+      ]
+    },
+    {
+      "prompt": "scan for hardcoded secrets and api key leaks in the frontend",
+      "accept": [
+        "security-reviewer",
+        "secrets-credential-hygiene-engineer"
+      ]
+    },
+    {
+      "prompt": "cargo build failed with unresolved import and type mismatch",
+      "accept": [
+        "build-error-resolver"
+      ]
+    },
+    {
+      "prompt": "tsc error cannot find module after the refactor",
+      "accept": [
+        "build-error-resolver"
+      ]
+    },
+    {
+      "prompt": "go compiler complains about interface mismatch and linking error",
+      "accept": [
+        "build-error-resolver"
+      ]
+    },
+    {
+      "prompt": "write playwright browser tests for the signup user journey",
+      "accept": [
+        "e2e-runner",
+        "test-automation-engineer"
+      ]
+    },
+    {
+      "prompt": "cypress end to end flow for login and logout",
+      "accept": [
+        "e2e-runner",
+        "test-automation-engineer"
+      ]
+    },
+    {
+      "prompt": "remove dead code and simplify deeply nested functions",
+      "accept": [
+        "refactor-cleaner"
+      ]
+    },
+    {
+      "prompt": "clean up unused imports and deduplicate helper logic",
+      "accept": [
+        "refactor-cleaner"
+      ]
+    },
+    {
+      "prompt": "update README and API docs to match recent changes",
+      "accept": [
+        "doc-updater"
+      ]
+    },
+    {
+      "prompt": "who calls processPayment and what is the blast radius",
+      "accept": [
+        "graph-analyst"
+      ]
+    },
+    {
+      "prompt": "query the knowledge graph for callers of parseConfig",
+      "accept": [
+        "graph-analyst"
+      ]
+    },
+    {
+      "prompt": "optimize our slow PostgreSQL query and suggest indexes for user_orders table",
+      "accept": [
+        "database-optimizer",
+        "database-reliability-engineer"
+      ]
+    },
+    {
+      "prompt": "postgres schema design and indexing strategy for the events table",
+      "accept": [
+        "database-optimizer"
+      ]
+    },
+    {
+      "prompt": "set up CI/CD pipeline automation and deploy our backend service to cloud infrastructure",
+      "accept": [
+        "devops-automator",
+        "platform-engineer",
+        "sre-site-reliability-engineer"
+      ]
+    },
+    {
+      "prompt": "create kubernetes deployment and helm charts for staging",
+      "accept": [
+        "devops-automator",
+        "platform-engineer"
+      ]
+    },
+    {
+      "prompt": "write terraform modules for provisioning the VPC and clusters",
+      "accept": [
+        "devops-automator",
+        "platform-engineer",
+        "cloud-security-architect"
+      ]
+    },
+    {
+      "prompt": "add docker compose setup for local development",
+      "accept": [
+        "devops-automator",
+        "platform-engineer"
+      ]
+    },
+    {
+      "prompt": "build a RAG pipeline with vector embeddings and pinecone",
+      "accept": [
+        "rag-pipeline-engineer",
+        "ai-engineer"
+      ]
+    },
+    {
+      "prompt": "fine-tune an LLM and run evaluations on our chatbot",
+      "accept": [
+        "ai-engineer",
+        "prompt-engineer",
+        "llm-post-training-engineer"
+      ]
+    },
+    {
+      "prompt": "create a GraphQL API schema and resolvers for the product catalog",
+      "accept": [
+        "api-platform-engineer",
+        "backend-architect"
+      ]
+    },
+    {
+      "prompt": "design REST endpoints and versioning for the payments service",
+      "accept": [
+        "api-platform-engineer",
+        "backend-architect"
+      ]
+    },
+    {
+      "prompt": "our supabase app has no row level security policies, lock it down",
+      "accept": [
+        "security-reviewer",
+        "ai-generated-code-security-auditor",
+        "database-optimizer"
+      ]
+    },
+    {
+      "prompt": "run a WCAG accessibility audit on the dashboard",
+      "accept": [
+        "section-508-accessibility-specialist",
+        "accessibility-auditor"
+      ]
+    },
+    {
+      "prompt": "tune the React frontend for Core Web Vitals and LCP",
+      "accept": [
+        "frontend-developer"
+      ]
+    },
+    {
+      "prompt": "debug python virtualenv import errors after upgrade",
+      "accept": [
+        "build-error-resolver"
+      ]
+    },
+    {
+      "prompt": "deploy an ML model serving API with fastapi and mlflow monitoring",
+      "accept": [
+        "ai-engineer"
+      ]
+    },
+    {
+      "prompt": "data engineering pipeline with spark for aggregating logs",
+      "accept": [
+        "data-engineer"
+      ]
+    },
+    {
+      "prompt": "review the diff for security problems before we ship",
+      "accept": [
+        "code-reviewer",
+        "security-reviewer"
+      ]
+    }
+  ]
+}
