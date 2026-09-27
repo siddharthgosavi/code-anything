@@ -271,7 +271,5 @@
   "instructions": [
     "AGENTS.md"
   ],
-  "plugin": [
-    "code-anything"
-  ]
+  "plugin": []
 }
