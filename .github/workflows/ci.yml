@@ -20,7 +20,7 @@ jobs:
     name: test (node ${{ matrix.node }}, ${{ matrix.os }})
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
       # Zero runtime deps; graphify/pip not required for the node suite
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
       - run: npm audit --audit-level=high
@@ -48,7 +48,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
