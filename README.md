@@ -22,7 +22,7 @@
   git clone https://github.com/siddharthgosavi/code-anything && cd code-anything && npm link
   ```
 
-  Once published, `npx code-anything` becomes the one-command path. (We deliberately did **not** keep the prior `everything-opencode` name — it resolves to an unrelated third-party package. See ADR-004.)
+  Once published, `npx code-anything` becomes the one-command path.
 
 ---
 
