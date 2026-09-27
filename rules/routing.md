@@ -21,6 +21,6 @@ Whenever the user writes a prompt, analyze the request using this intent classif
 ## CLI Prompt Routing Utility
 If a prompt is ambiguous or spans multiple specialized fields, run:
 ```bash
-npx everything-opencode route "<user prompt>"
+npx code-anything route "<user prompt>"
 ```
 This returns the optimal agent, confidence score, and suggested multi-agent sequence.

@@ -1,34 +1,50 @@
-# Everything OpenCode
+![code-anything wordmark](assets/logo/wordmark.png)
+
+# Code Anything
+
+> **The agent ops layer for AI coding CLIs — session-safe setup, zero-token code intelligence, measured agent routing.**
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)
-![OpenCode](https://img.shields.io/badge/OpenCode-ready-purple.svg)
-![Graphify](https://img.shields.io/badge/Graphify-integrated-orange.svg)
 
-**The complete, production-ready configuration suite and plugin for the OpenCode coding agent.**
+## Status
 
-Adapted from the battle-tested patterns of [everything-claude-code](https://github.com/worldflowai/everything-claude-code), fully re-architected for OpenCode with native **Graphify Code Intelligence**, model flexibility, robust lifecycle hooks, and zero session disruption.
+**Pre-launch / install-from-source.** Honest scope of claims:
+- ✅ Tested: 10 suites incl. routing golden-set eval, catalog parity guard, and hook safety — see `npm test` and [CI](.github/workflows/ci.yml).
+- ⚠️ Routing accuracy is a **regression guard** on a 44-case golden set ([ADR-002](docs/adr/ADR-002-deterministic-router-with-eval-gate.md)), not a semantic-quality claim; deterministic v1 scorer.
+- ⚠️ Built against OpenCode plugin API `1.18.x`; relies on `experimental.session.compacting` (unstable by name).
+- 🔲 **npm publish pending.** The package is renamed `code-anything` ([ADR-004](docs/adr/ADR-004-package-rename-code-anything.md)) and the name is free on npm, but not yet published. Until the first release, install from source:
+
+  ```bash
+  npm install -g github:siddharthgosavi/code-anything
+  # or, from a local clone:
+  git clone https://github.com/siddharthgosavi/code-anything && cd code-anything && npm link
+  ```
+
+  Once published, `npx code-anything` becomes the one-command path. (We deliberately did **not** keep the prior `everything-opencode` name — it resolves to an unrelated third-party package. See ADR-004.)
 
 ---
 
 ## Quick Start: One Command Setup
 
-To configure OpenCode in your project, simply run:
+Adapted from the patterns of [everything-claude-code](https://github.com/worldflowai/everything-claude-code), re-architected for OpenCode with native **Graphify Code Intelligence**, model flexibility, lifecycle hooks that never touch your sessions, and test-gated configuration merges.
+
+Once published (or with `npm link` from a clone), configure OpenCode in your project:
 
 ```bash
-npx everything-opencode
+npx code-anything
 ```
 
 Or install globally for all projects:
 
 ```bash
-npx everything-opencode install --global
+npx code-anything install --global
 ```
 
 That's it! Your OpenCode setup is immediately equipped with:
 - **10 Specialized Subagents** (`planner`, `architect`, `tdd-guide`, `code-reviewer`, `security-reviewer`, `build-error-resolver`, `e2e-runner`, `refactor-cleaner`, `doc-updater`, `graph-analyst`)
 - **14 Slash Commands** (`/plan`, `/tdd`, `/verify`, `/code-review`, `/build-fix`, `/refactor-clean`, `/e2e`, `/test-coverage`, `/update-docs`, `/checkpoint`, `/learn`, `/graph-query`, `/graph-build`, `/setup-pm`)
-- **10 Modular Skills** (`graphify-intelligence`, `tdd-workflow`, `verification-loop`, `backend-patterns`, `frontend-patterns`, `coding-standards`, `continuous-learning`, `eval-harness`, `security-review`, `strategic-compaction`)
+- **12 Modular Skills** (`graphify-intelligence`, `tdd-workflow`, `verification-loop`, `backend-patterns`, `frontend-patterns`, `coding-standards`, `continuous-learning`, `eval-harness`, `security-review`, `strategic-compaction`, `agent-orchestrator`, `clickhouse-io`)
 - **First-Class Graphify Integration** (instant AST dependency graphs, call flow queries, community clustering)
 - **Safe Session Protection** (never terminates or disturbs your active OpenCode sessions)
 
@@ -36,7 +52,7 @@ That's it! Your OpenCode setup is immediately equipped with:
 
 ## Graphify Code Intelligence
 
-Unlike Claude Code configurations that rely on naive text grep or expensive manual codemaps that burn tens of thousands of tokens, `everything-opencode` natively integrates with **[Graphify](https://github.com/worldflowai/graphify)**.
+Unlike Claude Code configurations that rely on naive text grep or expensive manual codemaps that burn tens of thousands of tokens, `code-anything` natively integrates with **[Graphify](https://github.com/worldflowai/graphify)**.
 
 ### Why Graphify?
 - **Zero Token AST Parsing**: Indexes codefiles in milliseconds using local Tree-Sitter AST parsers.
@@ -46,13 +62,13 @@ Unlike Claude Code configurations that rely on naive text grep or expensive manu
 ### Using Graphify with OpenCode:
 ```bash
 # Build knowledge graph for current project (code-only, fast, zero API cost)
-npx everything-opencode graphify init
+npx code-anything graphify init
 
 # Query relationships for a function or symbol
-npx everything-opencode graphify query "authMiddleware"
+npx code-anything graphify query "authMiddleware"
 
 # Check graph status
-npx everything-opencode graphify status
+npx code-anything graphify status
 ```
 
 In OpenCode:
@@ -65,15 +81,15 @@ In OpenCode:
 
 ## Flaws of everything-claude-code Fixed
 
-`everything-opencode` directly resolves the core flaws and architectural limitations of `everything-claude-code`:
+`code-anything` directly resolves the core flaws and architectural limitations of `everything-claude-code`:
 
 1. **Graphify vs. Manual Codemaps**: Replaced expensive, text-based markdown codemaps (which burned 50k+ tokens and quickly decayed) with real Tree-Sitter AST knowledge graphs.
-2. **Dynamic Model Selection vs. Hardcoded Opus**: `everything-claude-code` hardcoded `model: opus` in every agent, breaking when users lacked Anthropic API keys or used local/alternative models. `everything-opencode` defaults to `inherit` (using your active session model) and offers flexible presets (`openai`, `google`, `anthropic`, `explabs`, `github`).
+2. **Dynamic Model Selection vs. Hardcoded Opus**: `everything-claude-code` hardcoded `model: opus` in every agent, breaking when users lacked Anthropic API keys or used local/alternative models. `code-anything` defaults to `inherit` (using your active session model) and offers flexible presets (`openai`, `google`, `anthropic`, `explabs`, `github`).
 3. **Native OpenCode Schema vs. Claude Markdown Commands**: Converted freeform markdown command prompts into schema-compliant OpenCode commands with `$ARGV` substitution and agent delegation.
 4. **Non-Intrusive Hooks vs. Hard Blocking**: Removed anti-patterns like blocking dev servers outside tmux or violently blocking file creation for non-whitelisted markdown files (`process.exit(1)`).
 5. **100% Cross-Platform Node.js**: Eliminated platform-dependent bash scripts (`.sh`) and unhandled `globalThis.Bun` bugs. Runs on Node.js 18+, Bun, Linux, macOS, and Windows.
 6. **Pre-Compaction Memory Snapshots**: Uses OpenCode's native `experimental.session.compacting` hook to dump structured state snapshots before context reduction, avoiding context amnesia without polluting start prompts.
-7. **One-Command NPX Setup**: Eliminated manual symlink management and config surgery in favor of a single `npx everything-opencode` command with atomic `.bak` backups.
+7. **One-Command NPX Setup**: Eliminated manual symlink management and config surgery in favor of a single `npx code-anything` command with atomic `.bak` backups.
 
 *For full architectural analysis, see [FLAWS_FIXED.md](FLAWS_FIXED.md).*
 
@@ -82,7 +98,7 @@ In OpenCode:
 ## Active Session Safety Guarantee
 
 If you have existing, long-running OpenCode sessions:
-- `everything-opencode` **NEVER** terminates, signals, or kills running `opencode` processes.
+- `code-anything` **NEVER** terminates, signals, or kills running `opencode` processes.
 - All configuration edits are **non-destructive**: your existing providers (e.g. ExperientialLabs, OpenAI, Anthropic), custom API keys (e.g. `explabs.key`), custom MCP servers, and existing plugins (e.g. `@upstash/context7-opencode`) are 100% preserved.
 - Automatic backups (`opencode.jsonc.bak`) are created before writing any changes.
 
@@ -90,7 +106,7 @@ If you have existing, long-running OpenCode sessions:
 
 ## Two-Tier Agent Architecture
 
-`everything-opencode` features a unique two-tier agent architecture:
+`code-anything` features a unique two-tier agent architecture:
 1. **Tier 1: 10 Core Orchestrator Agents** (pre-configured with slash commands & AST knowledge graphs).
 2. **Tier 2: 279 Agency Specialist Agents** across 18 specialized divisions (curated from [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents)), installable on-demand or callable as `@<slug>` subagents.
 
@@ -115,40 +131,34 @@ If you have existing, long-running OpenCode sessions:
 
 ## Agency Specialist Roster (Tier 2 - 279 Agents)
 
-Equip OpenCode with 279 specialized agent personas spanning 18 distinct divisions. All technical division agents come with native **Graphify Code Intelligence** instructions pre-injected.
+Equip OpenCode with 279 specialized agent personas spanning 18 real catalog divisions. All technical division agents come with native **Graphify Code Intelligence** instructions pre-injected.
 
-### Agency Divisions
-- **Engineering (21 agents)**: `database-optimizer`, `graphql-architect`, `api-designer`, `devops-specialist`, `backend-architect`, etc.
-- **Architecture (11 agents)**: `cloud-architect`, `microservices-specialist`, `data-architect`, `system-integrator`, etc.
-- **Testing & QA (9 agents)**: `test-automation-engineer`, `accessibility-auditor`, `api-tester`, `performance-benchmarker`, etc.
-- **Security & Compliance (14 agents)**: `security-auditor`, `threat-modeler`, `compliance-officer`, `pentest-analyst`, etc.
-- **Design & UI/UX (27 agents)**: `design-system-architect`, `interaction-designer`, `mobile-ui-designer`, etc.
-- **Data & AI (18 agents)**: `ml-engineer`, `data-engineer`, `prompt-engineer`, `analytics-architect`, etc.
-- **DevOps & Cloud (16 agents)**: `k8s-operator`, `terraform-expert`, `ci-cd-pipeline-engineer`, etc.
-- **Product & Project (24 agents)**: `scrum-master`, `technical-product-manager`, `release-manager`, etc.
-- **Marketing, Sales, Support, Operations, Finance, Legal, HR, Executive & Spatial (139 agents)**
+### Agency Divisions (actual `agents/agency/divisions.json` counts)
+- **Engineering (64)**: `database-optimizer`, `api-platform-engineer`, `devops-automator`, `platform-engineer`, `sre-site-reliability-engineer`, `backend-architect`, `ai-engineer`, `data-engineer`, `rag-pipeline-engineer`, `frontend-developer`, etc.
+- **Specialized (59)**: cross-domain experts (`model-qa-specialist`, `pricing-analyst`, `supply-chain-strategist`, etc.)
+- **Marketing (36)** · **Game Development (21)** · **GIS (13)** · **Security & Compliance (12)** · **Design & UI/UX (10)** · **Testing & QA (9)** · **Sales (9)** · **Paid Media (7)** · **Project Management (7)** · **Academic (6)** · **Spatial Computing (6)** · **Support (6)** · **Finance (5)** · **Product (5)** · **Healthcare (3)** · **Research (1)**
 
 ### Agency CLI Management
 ```bash
 # List all 18 divisions and counts
-npx everything-opencode agency list
+npx code-anything agency list
 
 # List agents in a specific division
-npx everything-opencode agency list --division engineering
+npx code-anything agency list --division engineering
 
 # Search agents across all 279 personas by role or keyword
-npx everything-opencode agency search "postgres"
-npx everything-opencode agency search "kubernetes"
-npx everything-opencode agency search "accessibility"
+npx code-anything agency search "postgres"
+npx code-anything agency search "kubernetes"
+npx code-anything agency search "accessibility"
 
 # Install specific agents into current project (.opencode/agents/)
-npx everything-opencode agency install database-optimizer graphql-architect
+npx code-anything agency install database-optimizer rag-pipeline-engineer
 
 # Install an entire division pack
-npx everything-opencode agency install --division engineering
+npx code-anything agency install --division engineering
 
 # Install all 279 agents globally (~/.config/opencode/agents/)
-npx everything-opencode agency install --all --global
+npx code-anything agency install --all --global
 ```
 
 In OpenCode, you can call any installed agency agent directly using `@<slug>`, for example:
@@ -182,13 +192,13 @@ If you prefer dedicated models per agent role, select a preset:
 
 ```bash
 # View available presets
-npx everything-opencode preset list
+npx code-anything preset list
 
 # Install with a specific preset
-npx everything-opencode install --preset google
-npx everything-opencode install --preset openai
-npx everything-opencode install --preset anthropic
-npx everything-opencode install --preset explabs
+npx code-anything install --preset google
+npx code-anything install --preset openai
+npx code-anything install --preset anthropic
+npx code-anything install --preset explabs
 ```
 
 ---
@@ -198,7 +208,7 @@ npx everything-opencode install --preset explabs
 Run the doctor diagnostic tool at any time:
 
 ```bash
-npx everything-opencode doctor
+npx code-anything doctor
 ```
 
 Outputs:
@@ -212,13 +222,13 @@ Outputs:
 
 ## Using as an OpenCode Plugin
 
-You can also load `everything-opencode` directly via OpenCode's plugin system in your `opencode.json` / `opencode.jsonc`:
+You can also load `code-anything` directly via OpenCode's plugin system in your `opencode.json` / `opencode.jsonc`:
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
   "plugin": [
-    "everything-opencode"
+    "code-anything"
   ]
 }
 ```
@@ -253,4 +263,4 @@ This project was built with the help of several amazing open-source projects:
 
 ## License
 
-MIT © [WorldFlow & Antigravity Contributors](LICENSE)
+MIT © [Siddharth Gosavi](LICENSE) — with the upstream projects credited above.

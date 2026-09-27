@@ -1,6 +1,6 @@
-# Contributing to everything-opencode
+# Contributing to code-anything
 
-Thank you for your interest in improving **everything-opencode**!
+Thank you for your interest in improving **code-anything**!
 
 ## How to Contribute
 

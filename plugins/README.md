@@ -8,27 +8,27 @@ Plugins extend OpenCode coding agent with new capabilities, lifecycle hooks, AST
 
 OpenCode supports plugins via npm packages registered in your global (`~/.config/opencode/opencode.json`) or project-level (`./opencode.json`) configuration.
 
-### 1. Automatic Setup with `everything-opencode`
+### 1. Automatic Setup with `code-anything`
 
 The quickest way to install and configure this plugin toolkit for your OpenCode environment:
 
 ```bash
 # Run one-shot interactive setup and installer
-npx everything-opencode
+npx code-anything
 
 # Or install globally
-npm install -g everything-opencode
+npm install -g code-anything
 ```
 
 ### 2. Manual Configuration
 
-Add `everything-opencode` to the `"plugin"` array in `opencode.json`:
+Add `code-anything` to the `"plugin"` array in `opencode.json`:
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
   "plugin": [
-    "everything-opencode"
+    "code-anything"
   ]
 }
 ```
@@ -37,7 +37,7 @@ Add `everything-opencode` to the `"plugin"` array in `opencode.json`:
 
 ## Plugin Architecture & Capabilities
 
-`everything-opencode` delivers full-lifecycle capabilities across your OpenCode sessions:
+`code-anything` delivers full-lifecycle capabilities across your OpenCode sessions:
 
 ### 1. Lifecycle Hooks
 - **`tool.execute.before`**:

@@ -37,15 +37,15 @@ If the user's prompt involves a specialized domain outside the core 10 meta-agen
 
 1. Run the routing query via CLI:
    ```bash
-   npx everything-opencode route "<user task prompt>"
+   npx code-anything route "<user task prompt>"
    ```
 2. Or search the 279 Agency catalog:
    ```bash
-   npx everything-opencode agency search "<keyword>"
+   npx code-anything agency search "<keyword>"
    ```
 3. Load the specialist agent:
    ```bash
-   npx everything-opencode agency install <slug>
+   npx code-anything agency install <slug>
    ```
 
 ---

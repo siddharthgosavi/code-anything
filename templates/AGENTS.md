@@ -1,6 +1,6 @@
 # OpenCode Agent Guidelines & Instructions
 
-Welcome to this repository. This project is configured with **everything-opencode** and **Graphify** code intelligence.
+Welcome to this repository. This project is configured with **code-anything** and **Graphify** code intelligence.
 
 ## 1. Codebase Navigation with Graphify
 - Before running broad or blind `grep` commands across the repository, check if `graphify-out/graph.json` exists.
@@ -20,7 +20,7 @@ Welcome to this repository. This project is configured with **everything-opencod
   - **Dead Code & Refactoring**: `@refactor-cleaner` (`/refactor-clean`) — cognitive complexity reduction.
   - **Docs & README Synchronization**: `@doc-updater` (`/update-docs`) — keep documentation fresh.
   - **Call Flow & Dependencies**: `@graph-analyst` (`/graph-query`) — AST blast radius analysis.
-  - **279 Agency Domain Specialists**: Search via `npx everything-opencode route "<task>"` or `npx everything-opencode agency search "<topic>"`.
+  - **279 Agency Domain Specialists**: Search via `npx code-anything route "<task>"` or `npx code-anything agency search "<topic>"`.
 
 ## 3. Planning & Phased Execution
 - For non-trivial features, refactoring, or migrations, run `/plan` to invoke the `planner` agent.

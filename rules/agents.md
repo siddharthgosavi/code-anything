@@ -22,7 +22,7 @@ For deep domain-specific tasks, invoke or install the corresponding Agency Speci
 - **Accessibility**: `@accessibility-auditor`
 - **Performance & Benchmarking**: `@performance-benchmarker`
 - **API Design & Testing**: `@api-designer`, `@api-tester`
-- *To find any domain specialist*: Run `npx everything-opencode route "<task prompt>"` or `npx everything-opencode agency search "<keyword>"`.
+- *To find any domain specialist*: Run `npx code-anything route "<task prompt>"` or `npx code-anything agency search "<keyword>"`.
 
 ## 3. Delegation Guardrails
 - **Plan Approval**: Never modify code during planning until explicit user confirmation is given.

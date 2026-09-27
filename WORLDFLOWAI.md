@@ -1,6 +1,6 @@
-# Everything OpenCode - WorldFlowAI Setup Guide
+# Code Anything - WorldFlowAI Setup Guide
 
-Quick reference for using the `everything-opencode` toolkit with synapse and arbiter projects.
+Quick reference for using the `code-anything` toolkit with synapse and arbiter projects.
 
 ## Installed Components
 
@@ -159,11 +159,11 @@ After extended tool calls, you'll see a reminder to run `/compact` or `/checkpoi
 
 ```bash
 # One-shot installation via npx
-npx everything-opencode
+npx code-anything
 
 # Or add as plugin in opencode.json
 {
-  "plugin": ["everything-opencode"]
+  "plugin": ["code-anything"]
 }
 ```
 
@@ -190,7 +190,7 @@ npx everything-opencode
 **Plugin or commands not showing:**
 ```bash
 # Run doctor to verify environment
-npx everything-opencode doctor
+npx code-anything doctor
 ```
 
 **Verify package manager:**
