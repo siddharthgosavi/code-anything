@@ -6,11 +6,12 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)
+[![CI](https://github.com/siddharthgosavi/code-anything/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/siddharthgosavi/code-anything/actions/workflows/ci.yml)
 
 ## Status
 
 **Pre-launch / install-from-source.** Honest scope of claims:
-- ✅ Tested: 10 suites incl. routing golden-set eval, catalog parity guard, and hook safety — see `npm test` and [CI](.github/workflows/ci.yml).
+- ✅ Tested: 12 suites incl. routing golden-set eval, catalog parity guard, and hook safety — see `npm test` and [CI](.github/workflows/ci.yml).
 - ⚠️ Routing accuracy is a **regression guard** on a 44-case golden set ([ADR-002](docs/adr/ADR-002-deterministic-router-with-eval-gate.md)), not a semantic-quality claim; deterministic v1 scorer.
 - ⚠️ Built against OpenCode plugin API `1.18.x`; relies on `experimental.session.compacting` (unstable by name).
 - 🔲 **npm publish pending.** The package is renamed `code-anything` ([ADR-004](docs/adr/ADR-004-package-rename-code-anything.md)) and the name is free on npm, but not yet published. Until the first release, install from source:
